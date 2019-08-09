@@ -1,0 +1,12 @@
+Marlin_main.cpp - program input file.
+ultralcd.h - simple lcd file.
+Marlin.h - marlin core configuration file.
+language.h - language control file.
+Version.h - project version file.
+
+Needed files:
+    -MarlinConfig.h for add new configurations for display.
+
+My files:
+    -nextionled.h, nextionled.cpp
+    -display.h - simple display picker
