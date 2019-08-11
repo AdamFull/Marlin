@@ -1,5 +1,5 @@
-#ifndef NEXTIONLED_H
-#define NEXTIONLED_H
+#ifndef NEXTIONLCD_H
+#define NEXTIONLCD_H
 
 #include "MarlinConfig.h"
 
@@ -20,6 +20,8 @@ void lcd_update();
 
     extern uint8_t lcdDrawUpdate;
     inline void lcd_refresh() { lcdDrawUpdate = LCDVIEW_CLEAR_CALL_REDRAW; }
+
+    inline void lcd_buttons_update() {}
 
     #define LCD_MESSAGEPGM(x)      lcd_setstatusPGM(PSTR(x))
     #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatusPGM(PSTR(x))

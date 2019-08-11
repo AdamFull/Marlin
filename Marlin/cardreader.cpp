@@ -26,7 +26,8 @@
 
 #include "cardreader.h"
 
-#include "ultralcd.h"
+//#include "ultralcd.h"
+#include "display.h"
 #include "stepper.h"
 #include "language.h"
 #include "printcounter.h"

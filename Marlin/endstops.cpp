@@ -29,7 +29,8 @@
 #include "endstops.h"
 #include "temperature.h"
 #include "stepper.h"
-#include "ultralcd.h"
+//#include "ultralcd.h"
+#include "display.h"
 
 #if ENABLED(ENDSTOP_INTERRUPTS_FEATURE)
   #include "endstop_interrupts.h"

@@ -35,7 +35,8 @@
 #include "printcounter.h"
 #include "serial.h"
 #include "temperature.h"
-#include "ultralcd.h"
+//#include "ultralcd.h"
+#include "display.h"
 
 // Recovery data
 job_recovery_info_t job_recovery_info;

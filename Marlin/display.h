@@ -3,6 +3,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#include "MarlinConfig.h"
+
     #if ENABLED(NEXTION_LCD) && !(ENABLED(ULTRA_LCD) || ENABLED(MALYAN_LCD))
         #include "nextionlcd.h"
     #elif (ENABLED(ULTRA_LCD) || ENABLED(MALYAN_LCD)) && !ENABLED(NEXTION_LCD)

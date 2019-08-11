@@ -65,7 +65,8 @@
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
-#include "ultralcd.h"
+//#include "ultralcd.h"
+#include "display.h"
 #include "language.h"
 #include "parser.h"
 
