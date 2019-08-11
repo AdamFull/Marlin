@@ -4,6 +4,8 @@
 
 #include "nextionlcd.h"
 #include "Marlin.h"
+//#include "ITEADLIB_Arduino_Nextion/Nextion.h"
+#include "twibus.h"
 #include "language.h"
 #include "cardreader.h"
 #include "temperature.h"
@@ -79,17 +81,17 @@ uint16_t max_display_update_time = 0;
 
 
   #if DISABLED(SLIM_LCD_MENUS)
-    static const bool lcd_control_temperature_preheat_material1_settings_menu = true;
-    static const bool lcd_control_temperature_preheat_material2_settings_menu = true;
+    bool lcd_control_temperature_preheat_material1_settings_menu = true;
+    bool lcd_control_temperature_preheat_material2_settings_menu = true;
   #else
-    static const bool lcd_control_temperature_preheat_material1_settings_menu;
-    static const bool lcd_control_temperature_preheat_material2_settings_menu;
+    bool lcd_control_temperature_preheat_material1_settings_menu;
+    bool lcd_control_temperature_preheat_material2_settings_menu;
   #endif
 
   #if DISABLED(NO_VOLUMETRICS) || ENABLED(ADVANCED_PAUSE_FEATURE)
-    static const bool lcd_control_filament_menu = true;
+    bool lcd_control_filament_menu = true;
   #else
-    static const bool lcd_control_filament_menu;
+    bool lcd_control_filament_menu;
   #endif
 
   #if ENABLED(LCD_INFO_MENU)
@@ -98,29 +100,29 @@ uint16_t max_display_update_time = 0;
     #else
       bool lcd_info_stats_menu;
     #endif
-    static const bool lcd_info_thermistors_menu = true;
-    static const bool lcd_info_board_menu = true;
-    static const bool lcd_info_menu = true;
+    bool lcd_info_thermistors_menu = true;
+    bool lcd_info_board_menu = true;
+    bool lcd_info_menu = true;
   #else
-    static const bool lcd_info_thermistors_menu;
-    static const bool lcd_info_board_menu;
-    static const bool lcd_info_menu;
+    bool lcd_info_thermistors_menu;
+    bool lcd_info_board_menu;
+    bool lcd_info_menu;
   #endif // LCD_INFO_MENU
 
   #if ENABLED(LED_CONTROL_MENU)
     #include "leds.h"
-    static const bool lcd_led_menu = true;
+    bool lcd_led_menu = true;
   #else
-    static const bool lcd_led_menu;
+    bool lcd_led_menu;
   #endif
 
   #if ENABLED(ADVANCED_PAUSE_FEATURE)
     #if E_STEPPERS > 1 || ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
-      static const bool lcd_change_filament_menu = true;
-      static const bool lcd_temp_menu_e0_filament_change;
+      bool lcd_change_filament_menu = true;
+      bool lcd_temp_menu_e0_filament_change;
     #else
-      static const bool lcd_change_filament_menu;
-      static const bool lcd_temp_menu_e0_filament_change = true;
+      bool lcd_change_filament_menu;
+      bool lcd_temp_menu_e0_filament_change = true;
     #endif
   #endif
 
@@ -132,15 +134,15 @@ uint16_t max_display_update_time = 0;
   #endif
 
   #if ENABLED(FWRETRACT)
-    static const bool lcd_control_retract_menu = true;
+    bool lcd_control_retract_menu = true;
   #else
-    static const bool lcd_control_retract_menu;
+    bool lcd_control_retract_menu;
   #endif
 
   #if ENABLED(DELTA_CALIBRATION_MENU) || ENABLED(DELTA_AUTO_CALIBRATION)
-    static const bool lcd_delta_calibrate_menu = true;
+    bool lcd_delta_calibrate_menu = true;
   #else
-    static const bool lcd_delta_calibrate_menu;
+    bool lcd_delta_calibrate_menu;
   #endif
 
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
@@ -149,6 +151,46 @@ uint16_t max_display_update_time = 0;
   #endif
 
 void lcd_init()
+{
+
+}
+
+bool lcd_detected()
+{
+  return false;
+}
+
+void lcd_update()
+{
+
+}
+
+bool lcd_hasstatus()
+{
+  return false;
+}
+
+void lcd_setstatus(const char* message, const bool persist) 
+{
+	
+}
+
+void lcd_setstatusPGM(const char* message, uint8_t level) 
+{
+	
+}
+
+void lcd_setalertstatusPGM(const char* message)
+{
+
+}
+
+void lcd_reset_status()
+{
+
+}
+
+void lcd_reset_alert_level()
 {
 
 }
