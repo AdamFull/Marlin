@@ -10,3 +10,8 @@ Needed files:
 My files:
     -nextionled.h, nextionled.cpp
     -display.h - simple display picker
+
+LCD files:
+    planner.h
+    ultralcd.h
+    utility.h
