@@ -256,7 +256,8 @@
 
 #include "Marlin.h"
 
-#include "ultralcd.h"
+//#include "ultralcd.h"
+#include "display.h"
 #include "planner.h"
 #include "stepper.h"
 #include "endstops.h"
