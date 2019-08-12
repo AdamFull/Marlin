@@ -112,7 +112,7 @@
  *
  * :[0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT 0
+#define SERIAL_PORT 1
 
 /**
  * This setting determines the communication speed of the printer.
@@ -1581,9 +1581,19 @@
 //#define ULTRA_LCD
 
 //
-// Nextion LCD
+// Nextion LCD. (P.S. if you wanna use this display, change #define SERIAL_PORT 1)
 //
 #define NEXTION_LCD
+
+//=============================================================================
+//======================== Nextion / Screen Selection =========================
+//=====================  (Screen type support functions)  =====================
+//=============================================================================
+
+//
+// Nextion LCD
+//
+//#define NEXTION_TIME
 
 //=============================================================================
 //======================== LCD / Controller Selection =========================

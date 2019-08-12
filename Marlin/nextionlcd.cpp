@@ -35,13 +35,13 @@
         #include "mesh_bed_leveling.h"
     #endif
 
-#if ENABLED(FWRETRACT)
-  #include "fwretract.h"
-#endif
+    #if ENABLED(FWRETRACT)
+        #include "fwretract.h"
+    #endif
 
-#if ENABLED(POWER_LOSS_RECOVERY)
-  #include "power_loss_recovery.h"
-#endif
+    #if ENABLED(POWER_LOSS_RECOVERY)
+        #include "power_loss_recovery.h"
+    #endif
 
     void lcd_init() {}
     bool lcd_detected() { return true; }
