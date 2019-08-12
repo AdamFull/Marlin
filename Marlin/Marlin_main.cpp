@@ -12749,7 +12749,7 @@ void process_parsed_command() {
       #if HAS_RESUME_CONTINUE
         case 0: case 1: gcode_M0_M1(); break;                     // M0: Unconditional stop, M1: Conditional stop
       #endif
-
+        case 1111: cap_line(PSTR("Command M1111 works!")); break; //TESTING_COMMAND
       #if ENABLED(SPINDLE_LASER_ENABLE)
         case 3: gcode_M3_M4(true); break;                         // M3: Laser/CW-Spindle Power
         case 4: gcode_M3_M4(false); break;                        // M4: Laser/CCW-Spindle Power
