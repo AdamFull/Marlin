@@ -15,6 +15,22 @@
     inline void lcd_setalertstatusPGM(const char* message) { UNUSED(message); }
 #endif
 
+#if ENABLED(NEXTION_LCD)
 
+    #include "Marlin.h"
+
+    bool lcd_hasstatus();
+    void lcd_setstatus(const char* message, const bool persist=false);
+    void lcd_setstatusPGM(const char* message, const int8_t level=0);
+    void lcd_reset_alert_level();
+    void lcd_reset_status();
+
+    extern uint8_t lcdDrawUpdate;
+    inline void lcd_refresh() { lcdDrawUpdate = LCDVIEW_CLEAR_CALL_REDRAW; }
+
+    #define LCD_MESSAGEPGM(x)      lcd_setstatusPGM(PSTR(x))
+    #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatusPGM(PSTR(x))
+
+#endif
 
 #endif
