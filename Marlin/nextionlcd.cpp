@@ -3,15 +3,19 @@
 #if ENABLED(NEXTION_LCD)
 
     #include "nextionlcd.h"
+    #include "nextionlcdelements.h"
     #include "Marlin.h"
-    #include "language.h"
-    #include "cardreader.h"
-    #include "temperature.h"
-    #include "planner.h"
-    #include "stepper.h"
-    #include "configuration_store.h"
-    #include "utility.h"
-    #include "parser.h"
+
+    nextionlcdelements interface;
+
+    #if ENABLED(NEXTION_TIME)
+        #include "TimeLib.h"
+    #endif
+
+    const byte MAX_MESSAGE_LENGTH = 255;
+    char lcd_status_message[MAX_MESSAGE_LENGTH + 1];
+    uint8_t lcd_status_update_delay = 1, // First update one loop delayed
+        lcd_status_message_level;
 
     #if HAS_BUZZER && DISABLED(LCD_USE_I2C_BUZZER)
         #include "buzzer.h"
@@ -43,12 +47,18 @@
         #include "power_loss_recovery.h"
     #endif
 
-    void lcd_init() {}
-    bool lcd_detected() { return true; }
+    void lcd_init() 
+    {
+        interface.setInitStatus(nexInit());
+        lcd_update();
+        interface.setStarted();
+    }
+
+    bool lcd_detected() { return interface.getInitStatus(); }
     void lcd_update() {}
     void lcd_setalertstatusPGM(const char* message) {}
 
-    bool lcd_hasstatus() { return true; }
+    bool lcd_hasstatus() { return (lcd_status_message[0] != '\0'); }
     void lcd_setstatus(const char* message, const bool persist) {}
     void lcd_setstatusPGM(const char* message, const int8_t level) {}
     void lcd_reset_alert_level() {}
