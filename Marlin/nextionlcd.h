@@ -25,6 +25,11 @@
     void lcd_reset_alert_level();
     void lcd_reset_status();
 
+    void processBuffer(const char* receivedString);
+    void ProcessPage(char * inputString, uint8_t receivedBytes);
+    void processMessage(const char * message);
+    void SerialEvent();
+
     extern uint8_t lcdDrawUpdate;
     inline void lcd_refresh() { lcdDrawUpdate = LCDVIEW_CLEAR_CALL_REDRAW; }
 
@@ -43,6 +48,8 @@
     #endif
 
     //bool lcd_blink();
+
+    constexpr bool lcd_wait_for_move = false;
 
     inline void lcd_status_printf_P(const uint8_t level, const char * const fmt, ...) { UNUSED(level); UNUSED(fmt); }
     inline void status_printf(uint8_t level, const char *status, ...) { UNUSED(level); UNUSED(status); }

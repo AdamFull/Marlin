@@ -7,11 +7,7 @@
 
     #include "printercontrol.h"
 
-    #include "NexText.h"
-    #include "NexPicture.h"
-    #include "NexDualStateButton.h"
-    #include "NexVariable.h"
-    #include "NexTimer.h"
+    #include "Nextion.h"
 
     #if ENABLED(NEXTION_TIME)
         #include "Wire.h"
