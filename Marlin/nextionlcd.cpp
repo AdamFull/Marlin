@@ -2,12 +2,35 @@
 
 #if ENABLED(NEXTION_LCD)
 
+	#if ENABLED(SDSUPPORT)
+  		#include "cardreader.h"
+  		#include "SdFatConfig.h"
+	#else
+  		#define LONG_FILENAME_LENGTH 0
+	#endif
+
     #include "nextionlcd.h"
     #include "nextionlcdelements.h"
-    #include "utility.h"
-    //#include "Conditionals_post.h"
-    #include "Marlin.h"
+	
+    #include "temperature.h"
+	#include "planner.h"
+	#include "stepper.h"
+	#include "duration_t.h"
+	#include "printcounter.h"
+	#include "parser.h"
+	#include "configuration_store.h"
     #include "queue.h"
+
+	#include "Marlin.h"
+
+	#if USE_MARLINSERIAL
+  		// Make an exception to use HardwareSerial too
+  		#undef HardwareSerial_h
+		#include <HardwareSerial.h>
+		#define USB_STATUS true
+	#else
+  		#define USB_STATUS Serial3
+	#endif
 
     nextionlcdelements interface;
 
@@ -22,36 +45,6 @@
 
     #if HAS_BUZZER && DISABLED(LCD_USE_I2C_BUZZER)
         #include "buzzer.h"
-    #endif
-
-    #include "printcounter.h"
-
-    #if ENABLED(PRINTCOUNTER)
-        #include "duration_t.h"
-    #endif
-
-    #if ENABLED(BLTOUCH)
-        #include "endstops.h"
-    #endif
-
-    #if ENABLED(AUTO_BED_LEVELING_UBL)
-        #include "ubl.h"
-    #elif HAS_ABL
-        #include "planner.h"
-    #elif ENABLED(MESH_BED_LEVELING) && ENABLED(LCD_BED_LEVELING)
-        #include "mesh_bed_leveling.h"
-    #endif
-
-    #if ENABLED(FWRETRACT)
-        #include "fwretract.h"
-    #endif
-
-    #if ENABLED(POWER_LOSS_RECOVERY)
-        #include "power_loss_recovery.h"
-    #endif
-
-    #if ENABLED(LCD_BED_LEVELING) && (ENABLED(PROBE_MANUALLY) || ENABLED(MESH_BED_LEVELING))
-    bool lcd_wait_for_move;
     #endif
 
     queue inputQueue;

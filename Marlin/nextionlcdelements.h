@@ -7,7 +7,7 @@
 
     #include "printercontrol.h"
 
-    #include "ITEADLIB_Arduino_Nextion/Nextion.h"
+    #include "Nextion.h"
 
     #if ENABLED(NEXTION_TIME)
         #include "Wire.h"

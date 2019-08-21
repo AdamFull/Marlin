@@ -41,8 +41,6 @@
         void lcd_bootscreen();
     #endif
 
-    #define LCD_UPDATE_INTERVAL 400
-
     #if ENABLED(FILAMENT_LCD_DISPLAY) && ENABLED(SDSUPPORT)
         extern millis_t previous_lcd_status_ms;
     #endif
