@@ -1,37 +1,42 @@
 #include "nextionlcdelements.h"
+#include "temperature.h"
 #include "language.h"
 
 #if ENABLED(NEXTION_LCD)
 
-	void nextionlcdelements::setXPos(char * inStr)
+	void nextionlcdelements::setXPos()
 	{
-		if (strcmp(inStr, _x)!=0 || _pageChanged || !isStarted())
+		char* xPos = ftostr52sp(current_position[X_AXIS]);
+		if (strcmp(xPos, _x)!=0 || _pageChanged || !isStarted())
 		{
-			this->tX.setText(inStr);
-			strcpy(_x, inStr);
+			this->tX.setText(xPos);
+			strcpy(_x, xPos);
 		}
 	}
 
-	void nextionlcdelements::setYPos(char * inStr) 
+	void nextionlcdelements::setYPos() 
 	{
-		if (strcmp(inStr, _y) != 0 || _pageChanged || !isStarted())
+		char* yPos = ftostr52sp(current_position[Y_AXIS]);
+		if (strcmp(yPos, _y) != 0 || _pageChanged || !isStarted())
 		{
-			this->tY.setText(inStr);
-			strcpy(_y, inStr);
+			this->tY.setText(yPos);
+			strcpy(_y, yPos);
 		}
 	}
 
-	void nextionlcdelements::setZPos(char * inStr)
+	void nextionlcdelements::setZPos()
 	{
-		if (strcmp(inStr, _z) != 0 || _pageChanged || !isStarted())
+		char* zPos = ftostr52sp(current_position[Z_AXIS]);
+		if (strcmp(zPos, _z) != 0 || _pageChanged || !isStarted())
 		{
-			this->tZ.setText(inStr);
-			strcpy(_z, inStr);
+			this->tZ.setText(zPos);
+			strcpy(_z, zPos);
 		}
 	}
 
-	void nextionlcdelements::setBedTarget(char * inTemp)
+	void nextionlcdelements::setBedTarget(char temp[10])
 	{
+		char* inTemp = itoa(thermalManager.degTargetBed(), temp, 10);
 		if (strcmp(inTemp, _bt) != 0 || _pageChanged || !isStarted())
 		{
 			this->tBedT.setText(inTemp);
@@ -39,9 +44,9 @@
 		}
 	}
 
-	void nextionlcdelements::setBedActual(uint8_t inTemp)
+	void nextionlcdelements::setBedActual()
 	{
-		uint16_t average = (uint8_t)((_ba + inTemp) / 2);
+		uint16_t average = (uint8_t)((_ba + (uint8_t)thermalManager.degBed()) / 2);
 		if (_ba != average || _pageChanged || !isStarted())
 		{
 			this->tBedA.setText(itoa(average, ext, 10));
@@ -49,8 +54,9 @@
 		}
 	}
 
-	void nextionlcdelements::setExtruderTarget(char * inTemp, int inExtruder)
+	void nextionlcdelements::setExtruderTarget()
 	{
+		char* inTemp = itostr3left(thermalManager.degTargetHotend(1));
 		if (strcmp(inTemp, _et) != 0 || _pageChanged || !isStarted())
 		{
 			this->tExtruder1T.setText(inTemp);
@@ -58,10 +64,9 @@
 		}
 	}
 
-	void nextionlcdelements::setExtruderActual(uint8_t inTemp, int inExtruder)
+	void nextionlcdelements::setExtruderActual()
 	{
-
-		uint16_t average = (uint8_t)((_ea + inTemp) / 2);
+		uint16_t average = (uint8_t)((_ea + (uint8_t)thermalManager.degHotend(1)) / 2);
 		if (_ea != average || _pageChanged || !isStarted())
 		{
 			this->tExtruder1A.setText(itoa(average, ext, 10));
@@ -69,8 +74,9 @@
 		}
 	}
 
-	void nextionlcdelements::setFan(char * inSpeed)
+	void nextionlcdelements::setFan(char temp[10])
 	{
+		char* inSpeed = itoa(map(fanSpeeds[0], 0, 255, 0, 100), temp, 10);
 		if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())
 		{
 			this->tFan.setText(inSpeed);

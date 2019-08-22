@@ -12,7 +12,6 @@
     #include "nextionlcd.h"
     #include "nextionlcdelements.h"
 	
-    #include "temperature.h"
 	#include "planner.h"
 	#include "stepper.h"
 	#include "duration_t.h"
@@ -77,17 +76,19 @@
         {
             char temp[10];
 
-		    //dispfe.setExtruderActual((uint8_t)thermalManager.degHotend(1), 1);
-		    //dispfe.setExtruderTarget(itostr3left(thermalManager.degTargetHotend(1)), 1);
+		    dispfe.setExtruderActual(); //Set current extruder temperature
+		    dispfe.setExtruderTarget(); //Set extruder target temperature
 
-		    //dispfe.setBedActual((uint8_t)thermalManager.degBed());
-		    //dispfe.setBedTarget(itoa(thermalManager.degTargetBed(), temp, 10));
+			#if HAS_HEATED_BED
+		    	dispfe.setBedActual();
+		    	dispfe.setBedTarget(temp);
+			#endif
 
-		    dispfe.setXPos(ftostr52sp(current_position[X_AXIS]));
-		    dispfe.setYPos(ftostr52sp(current_position[Y_AXIS]));
-		    dispfe.setZPos(ftostr52sp(current_position[Z_AXIS]));
+		    dispfe.setXPos();
+		    dispfe.setYPos();
+		    dispfe.setZPos();
 
-		    dispfe.setFan(itoa(map(fanSpeeds[0], 0, 255, 0, 100), temp, 10));
+		    dispfe.setFan(temp);
 
 		    dispfe.setPower(digitalRead(PS_ON_PIN));
             #if defined(CASE_LIGHT_PIN)

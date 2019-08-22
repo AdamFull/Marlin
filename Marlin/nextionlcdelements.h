@@ -5,8 +5,6 @@
 
 #if ENABLED(NEXTION_LCD)
 
-    #include "printercontrol.h"
-
     #include "Nextion.h"
 
     #if ENABLED(NEXTION_TIME)
@@ -31,27 +29,27 @@
     class nextionlcdelements    //Nextion visual components control
     {
     public:
-        void setExtruderActual(uint8_t inTemp, int inExtruder);
+        void setExtruderActual();
         inline NexText& gettExtruder1A() { return tExtruder1A; }
-        void setExtruderTarget(char * inTemp, int inExtruder);
+        void setExtruderTarget();
         inline NexText& gettExtruder1T() { return tExtruder1T; }
 
-        void setBedTarget(char * inTemp);
+        void setBedTarget(char temp[10]);
         inline NexText& gettBedT() { return tBedT; }
-        void setBedActual(uint8_t inTemp);
+        void setBedActual();
         inline NexText& gettBedA() { return tBedA; }
 
-        void setXPos(char * inStr);
+        void setXPos();
         inline NexText& gettX() { return tX; }
-        void setYPos(char * inStr);
+        void setYPos();
         inline NexText& gettY() { return tY; }
-        void setZPos(char * inStr);
+        void setZPos();
         inline NexText& gettZ() { return tZ; }
 
         void setMessage(const char * inStr);
         inline NexText& gettMessage() { return tMessage; }
 
-        void setFan(char * inSpeed);
+        void setFan(char temp[10]);
         inline NexText& gettFan() { return tFan; }
 
         void setTLayers(const char * inStr);
@@ -151,7 +149,6 @@
 	    int _minutes;
 
         bool init_status = false;
-        printercontrol controller;
     };
     #endif
 
