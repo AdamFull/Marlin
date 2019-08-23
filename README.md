@@ -11,6 +11,15 @@ A monumental amount of talent and effort goes into Marlin production, and thanks
 - See the [Releases](https://github.com/MarlinFirmware/Marlin/releases) page for Release Notes on all current and previous versions of Marlin.
 - Check out the [RepRap.org Marlin Page](http://reprap.org/wiki/Marlin) for an overview of Marlin and its role in the RepRap project.
 
+## Marlin 1.1.x Nextion Edition
+
+    - To use the Nextion display, uncomment the line ```#define NEXTION_LCD``` in Configuration.h.
+    - You can configurate the Marlin firmware for your Nextion GUI in 1596 line in Configuration file.
+    - By the way, you can select display port in NexConfig.h file, if Serial1 busy.
+    - If you want to patch new firmware version, run pypatcher.py in Marlin folder.
+
+    For the questions tell to my email: logotipick@gmail.com
+
 ## Marlin 1.1.x
 
 The 1.1.x branch is home to all tagged releases of Marlin 1.1.

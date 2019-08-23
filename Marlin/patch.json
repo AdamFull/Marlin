@@ -1,0 +1,10 @@
+{
+    "files" :
+        {"Configuration.h" : "ConfigPatch", "MarlinMain.cpp" : "includePatch"},
+    "NexFirmware" :
+        ["display.h", "nextionlcd.h", "nextionlcd.cpp", "nextionlcdelements.h", "nextionlcdelements.cpp", "printercontrol.h", "printercontrol.cpp", "queue.h", "queue.cpp"],
+    "Libraries" :
+        ["SD", "Nextion HMI"],
+    "Desc" :
+        "Enable the option 'HAS_HEATED_BED'"
+}
