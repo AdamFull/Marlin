@@ -11,6 +11,7 @@
 
     #include "nextionlcd.h"
     #include "nextionlcdelements.h"
+	#include "printercontrol.h"
 	
 	#include "planner.h"
 	#include "stepper.h"
@@ -26,12 +27,11 @@
   		// Make an exception to use HardwareSerial too
   		#undef HardwareSerial_h
 		#include <HardwareSerial.h>
+		//#include "Arduino.h"
 		#define USB_STATUS true
 	#else
-  		#define USB_STATUS Serial3
+  		#define USB_STATUS Serial2
 	#endif
-
-    nextionlcdelements interface;
 
     #if ENABLED(NEXTION_TIME)
         #include "TimeLib.h"
@@ -58,12 +58,12 @@
     void lcd_init() 
     {
         bool initState = nexInit();
-        interface.setInitStatus(initState);
+        dispfe.setInitStatus(initState);
         SERIAL_ECHO_START();
 		SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 		SERIAL_EOL();
         lcd_update();
-        interface.setStarted();
+        dispfe.setStarted();
     }
 
     void lcd_update() 
@@ -76,10 +76,8 @@
         {
             char temp[10];
 
-			#if EXTRUDERS > 0
-		    	dispfe.setExtruderActual(); //Set current extruder temperature
-		    	dispfe.setExtruderTarget(); //Set extruder target temperature
-			#endif
+		    dispfe.setExtruderActual(); //Set current extruder temperature
+		    dispfe.setExtruderTarget(); //Set extruder target temperature
 
 			#if HAS_HEATED_BED
 		    	dispfe.setBedActual();
@@ -98,7 +96,7 @@
 		    	dispfe.setPower(digitalRead(PS_ON_PIN));
 			#endif
 
-            #if defined(CASE_LIGHT_PIN)
+            #if ENABLED(CASE_LIGHT_ENABLE)
 		        dispfe.setCaseLight(digitalRead(CASE_LIGHT_PIN));
             #endif
 
@@ -119,7 +117,7 @@
         }
     }
 
-    bool lcd_detected() { return interface.getInitStatus(); }
+    bool lcd_detected() { return dispfe.getInitStatus(); }
     void lcd_setalertstatusPGM(const char* message) {}
 
     bool lcd_hasstatus() { return (lcd_status_message[0] != '\0'); }
@@ -143,7 +141,7 @@
 		    memcpy(subbuff, &receivedString[3], strLength);
 		    subbuff[strLength + 1] = '\0';
 
-			dispfe.setExtruderTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
+			printercontrol::setHotendTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
 		    break;
 		#endif //END HAS_EXTRUDER
 		#if HAS_HEATED_BED
@@ -152,7 +150,7 @@
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength + 1] = '\0';
 			
-			dispfe.setBedTemperature(atoi(subbuff));
+			printercontrol::setBedTemperature(atoi(subbuff));
 		    break;
 		#endif //END HAS_HEATED_BED
 		#if FAN_COUNT > 0
@@ -161,7 +159,7 @@
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength + 1] = '\0';
 
-		    fanSpeeds[0] = map(atoi(subbuff), 0, 100, 0, 255); //(ceil(atoi(subbuff) * 2.54));
+			printercontrol::setFanSpeed(subbuff); //(ceil(atoi(subbuff) * 2.54));
 		    break;
 		#endif //END FAN_COUNT
 	    case 'G': //Send g-code
@@ -187,7 +185,7 @@
 		    dispfe.setPower((bool)atoi(subbuff));
 		    break;
 		#endif //END PS_ON_PIN
-		#if defined(CASE_LIGHT_PIN)
+		#if ENABLED(CASE_LIGHT_ENABLE)
 	    case 'C': //Case Light
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);

@@ -1,12 +1,12 @@
 #include "nextionlcdelements.h"
-#include "temperature.h"
+#include "printercontrol.h"
 #include "language.h"
 
 #if ENABLED(NEXTION_LCD)
 
 	void nextionlcdelements::setXPos()
 	{
-		char* xPos = ftostr52sp(current_position[X_AXIS]);
+		char* xPos = ftostr52sp(printercontrol::getCurrentPosition(X_AXIS));
 		if (strcmp(xPos, _x)!=0 || _pageChanged || !isStarted())
 		{
 			this->tX.setText(xPos);
@@ -16,7 +16,7 @@
 
 	void nextionlcdelements::setYPos() 
 	{
-		char* yPos = ftostr52sp(current_position[Y_AXIS]);
+		char* yPos = ftostr52sp(printercontrol::getCurrentPosition(Y_AXIS));
 		if (strcmp(yPos, _y) != 0 || _pageChanged || !isStarted())
 		{
 			this->tY.setText(yPos);
@@ -26,7 +26,7 @@
 
 	void nextionlcdelements::setZPos()
 	{
-		char* zPos = ftostr52sp(current_position[Z_AXIS]);
+		char* zPos = ftostr52sp(printercontrol::getCurrentPosition(Z_AXIS));
 		if (strcmp(zPos, _z) != 0 || _pageChanged || !isStarted())
 		{
 			this->tZ.setText(zPos);
@@ -34,19 +34,9 @@
 		}
 	}
 
-	void nextionlcdelements::setBedTemperature(int targetTemp)
+	void nextionlcdelements::setBedTarget(char *temp)
 	{
-		thermalManager.setTargetBed(targetTemp);
-	}
-
-	void nextionlcdelements::setExtruderTemperature(int targetTemp, int extruderId)
-	{
-		thermalManager.setTargetHotend(targetTemp, extruderId);
-	}
-
-	void nextionlcdelements::setBedTarget(char temp[10])
-	{
-		char* inTemp = itoa(thermalManager.degTargetBed(), temp, 10);
+		char* inTemp = itoa(printercontrol::getDegTargetBed(), temp, 10);
 		if (strcmp(inTemp, _bt) != 0 || _pageChanged || !isStarted())
 		{
 			this->tBedT.setText(inTemp);
@@ -56,7 +46,7 @@
 
 	void nextionlcdelements::setBedActual()
 	{
-		uint16_t average = (uint8_t)((_ba + (uint8_t)thermalManager.degBed()) / 2);
+		uint16_t average = (uint8_t)((_ba + (uint8_t)printercontrol::getDegBed()) / 2);
 		if (_ba != average || _pageChanged || !isStarted())
 		{
 			this->tBedA.setText(itoa(average, ext, 10));
@@ -66,31 +56,40 @@
 
 	void nextionlcdelements::setExtruderTarget()
 	{
-		char* inTemp = itostr3left(thermalManager.degTargetHotend(1));
-		if (strcmp(inTemp, _et) != 0 || _pageChanged || !isStarted())
+		for(unsigned i = 0; i <= EXTRUDERS; i++)
 		{
-			this->tExtruder1T.setText(inTemp);
-			strcpy(_et, inTemp);
+			char* inTemp = itostr3left(printercontrol::getDegTargetHotend(i));
+			if (strcmp(inTemp, _et) != 0 || _pageChanged || !isStarted())
+			{
+				this->tExtruder1T.setText(inTemp);
+				strcpy(_et, inTemp);
+			}
 		}
 	}
 
 	void nextionlcdelements::setExtruderActual()
 	{
-		uint16_t average = (uint8_t)((_ea + (uint8_t)thermalManager.degHotend(1)) / 2);
-		if (_ea != average || _pageChanged || !isStarted())
+		for(unsigned i = 0; i <= EXTRUDERS; i++)
 		{
-			this->tExtruder1A.setText(itoa(average, ext, 10));
-			_ea = average;
+			uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
+			if (_ea != average || _pageChanged || !isStarted())
+			{
+				this->tExtruder1A.setText(itoa(average, ext, 10));
+				_ea = average;
+			}
 		}
 	}
 
-	void nextionlcdelements::setFan(char temp[10])
+	void nextionlcdelements::setFan(char *temp)
 	{
-		char* inSpeed = itoa(map(fanSpeeds[0], 0, 255, 0, 100), temp, 10);
-		if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())
+		for(unsigned i = 0; i <= FAN_COUNT; i++)
 		{
-			this->tFan.setText(inSpeed);
-			strcpy(_fan, inSpeed);
+			char* inSpeed = itoa(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100), temp, 10);
+			if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())
+			{
+				this->tFan.setText(inSpeed);
+				strcpy(_fan, inSpeed);
+			}
 		}
 	}
 
@@ -126,7 +125,7 @@
 			if (_page == 2)
 				this->btPower.setValue(_power ? 1 : 0);
 			else if (_page == 1)
-            	status ? this->pPower.setPic(19) : this->pPower.setPic(20);
+            	status ? this->pPower.setPic(pPower_e_id) : this->pPower.setPic(pEmpty_id);
 		}
 	}
 
@@ -142,7 +141,7 @@
 			else if (_page == 1)
 			{
 				//uint32_t val = atoi(subbuff);
-            	status == 1 ? this->pLight.setPic(18) : this->pLight.setPic(20);
+            	status == 1 ? this->pLight.setPic(pLight_e_id) : this->pLight.setPic(pEmpty_id);
 			}
 		}
 	}
@@ -155,13 +154,13 @@
 
 			if (status == 1)
 			{
-				this->pExtruding.setPic(23);
+				this->pExtruding.setPic(pExtruding_e_id);
 				this->tmSS.disable();
 				this->vaCounter.setValue(0);
 			}
 			else
 			{
-				this->pExtruding.setPic(20);
+				this->pExtruding.setPic(pEmpty_id);
 				this->tmSS.enable();
 				this->vaCounter.setValue(0);
 			}
@@ -173,7 +172,7 @@
 		if (_isHomed != status || _pageChanged || !isStarted())
 		{
 			_isHomed = status;
-        	status == 1 ? this->pHome.setPic(24) : this->pHome.setPic(20);
+        	status == 1 ? this->pHome.setPic(pHome_e_id) : this->pHome.setPic(pEmpty_id);
 		}
 	}
 

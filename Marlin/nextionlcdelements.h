@@ -12,74 +12,31 @@
         #include "TimeLib.h"
     #endif
 
-    #define LOGO_PAGE 0
-    #define LOADING_B 1
-    #define LOADING_E 4
-    #define MAIN_PAGE 5
-    #define MENU_PAGE 6
-    #define HEAT_B 7
-    #define HEAT_E 10
-    #define FAN_B 11
-    #define FAN_E 13
-    #define EXTRUDER_PAGE 14
-    #define MOVEMENT_PAGE 21
-    #define GCODE_PAGE
-    #define SAVER_PAGE
-
     class nextionlcdelements    //Nextion visual components control
     {
     public:
-        void setExtruderTemperature(int targetTemp, int extruderId);
         void setExtruderActual();
-        inline NexText& gettExtruder1A() { return tExtruder1A; }
         void setExtruderTarget();
-        inline NexText& gettExtruder1T() { return tExtruder1T; }
 
-        void setBedTemperature(int targetTemp);
-        void setBedTarget(char temp[10]);
-        inline NexText& gettBedT() { return tBedT; }
+        void setBedTarget(char *temp);
         void setBedActual();
-        inline NexText& gettBedA() { return tBedA; }
 
         inline void enableBed() { }
 
         void setXPos();
-        inline NexText& gettX() { return tX; }
         void setYPos();
-        inline NexText& gettY() { return tY; }
         void setZPos();
-        inline NexText& gettZ() { return tZ; }
 
         void setMessage(const char * inStr);
-        inline NexText& gettMessage() { return tMessage; }
 
-        void setFan(char temp[10]);
-        inline NexText& gettFan() { return tFan; }
+        void setFan(char *temp);
 
         void setTLayers(const char * inStr);
-        inline NexText& gettLayers() { return tLayers; }
         void setTETA(const char * inStr);
-        inline NexText& gettETA() { return tETA; }
         void setTPercentage(const char * inStr);
-        inline NexText& gettPercentage() { return tPercentage; }
-
-        inline NexDSButton& getbtPower() { return btPower; }
-        inline NexDSButton& getbtLight() { return btLight; }
-
-        inline NexPicture& getpPower() { return pPower; }
-        inline NexPicture& getpLight() { return pLight; }
 
         void setPower(bool status);
-        inline NexVariable& getvaPower() { return vaPower; }
         void setCaseLight(bool status);
-        inline NexVariable& getvaLight() { return vaLight; }
-
-        inline NexPicture& getpHome() { return pHome; }
-        inline NexPicture& getpExtruding() { return pExtruding; }
-
-        inline NexTimer& gettmSS() { return tmSS; }
-
-        inline NexVariable& getvaCounter() { return vaCounter; }
 
         #if ENABLED(NEXTION_TIME)
 	        void setTime(int year, int month, int day, int hour, int minute);
@@ -105,39 +62,43 @@
 	    bool isStarted();
 
     private:
-        NexText tExtruder1A = NexText(1, 28, "tExtruder1A");
-	    NexText tExtruder1T = NexText(1, 27, "tExtruder1T");
+        NexText tExtruder1A = NexText(main_page, tExtruder1A_id, "tExtruder1A");
+	    NexText tExtruder1T = NexText(main_page, tExtruder1T_id, "tExtruder1T");
+        #if EXTRUDERS > 1
+            NexText tExtruder2A = NexText(main_page, tExtruder2A_id, "tExtruder2A");
+	        NexText tExtruder2T = NexText(main_page, tExtruder2T_id, "tExtruder2T");
+        #endif
 
-	    NexText tBedT = NexText(1, 6, "tBedT");
-	    NexText tBedA = NexText(1, 5, "tBedA");
+	    NexText tBedT = NexText(main_page, tBedT_id, "tBedT");
+	    NexText tBedA = NexText(main_page, tBedA_id, "tBedA");
 
-	    NexText tX = NexText(1, 16, "tX");
-	    NexText tY = NexText(1, 17, "tY");
-	    NexText tZ = NexText(1, 18, "tZ");
+	    NexText tX = NexText(main_page, tX_id, "tX");
+	    NexText tY = NexText(main_page, tY_id, "tY");
+	    NexText tZ = NexText(main_page, tZ_id, "tZ");
 
-	    NexText tMessage = NexText(1, 7, "MainPage.tMessage");
+	    NexText tMessage = NexText(main_page, tMessage_id, "MainPage.tMessage");
 
-	    NexText tFan = NexText(1, 21, "tFan");
+	    NexText tFan = NexText(main_page, tFan_id, "tFan");
 
-	    NexText tLayers = NexText(1, 21, "MainPage.tLayers");
-	    NexText tETA = NexText(1, 19, "MainPage.tETA");
-	    NexText tPercentage = NexText(1, 8, "MainPage.tPercentage");
+	    NexText tLayers = NexText(main_page, tLayers_id, "MainPage.tLayers");
+	    NexText tETA = NexText(main_page, tETA_id, "MainPage.tETA");
+	    NexText tPercentage = NexText(main_page, tPercentage_id, "MainPage.tPercentage");
 
-        NexDSButton btPower = NexDSButton(2, 5, "MainMenu.btPower");
-	    NexDSButton btLight = NexDSButton(2, 6, "MainMenu.btLight");
+        NexDSButton btPower = NexDSButton(menu_page, btPower_id, "MainMenu.btPower");
+	    NexDSButton btLight = NexDSButton(menu_page, btLight_id, "MainMenu.btLight");
 
-	    NexPicture pPower = NexPicture(1, 29, "MainPage.pPower");
-	    NexPicture pLight = NexPicture(1, 30, "MainPage.pLight");
+	    NexPicture pPower = NexPicture(main_page, pPower_id, "MainPage.pPower");
+	    NexPicture pLight = NexPicture(main_page, pLight_id, "MainPage.pLight");
 
-	    NexVariable vaPower = NexVariable(2, 8, "MainMenu.vaPower");
-	    NexVariable vaLight = NexVariable(2, 9, "MainMenu.vaLight");
+	    NexVariable vaPower = NexVariable(menu_page, vaPower_id, "MainMenu.vaPower");
+	    NexVariable vaLight = NexVariable(menu_page, vaLight_id, "MainMenu.vaLight");
 
-	    NexPicture pHome = NexPicture(1, 35, "MainPage.pHome");
-	    NexPicture pExtruding = NexPicture(1, 34, "MainPage.pExtruding");
+	    NexPicture pHome = NexPicture(main_page, pHome_id, "MainPage.pHome");
+	    NexPicture pExtruding = NexPicture(main_page, pExtruding_id, "MainPage.pExtruding");
 
-	    NexTimer tmSS = NexTimer(1, 37, "tmSS");
+	    NexTimer tmSS = NexTimer(main_page, tmSS_id, "tmSS");
         
-	    NexVariable vaCounter = NexVariable(1, 38, "vaCounter");
+	    NexVariable vaCounter = NexVariable(main_page, vaCounter_id, "vaCounter");
 
         char _x[7], _y[7], _z[7];
 	    char _et[4], _fan[4], _bt[4];
