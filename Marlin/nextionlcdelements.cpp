@@ -34,6 +34,16 @@
 		}
 	}
 
+	void nextionlcdelements::setBedTemperature(int targetTemp)
+	{
+		thermalManager.setTargetBed(targetTemp);
+	}
+
+	void nextionlcdelements::setExtruderTemperature(int targetTemp, int extruderId)
+	{
+		thermalManager.setTargetHotend(targetTemp, extruderId);
+	}
+
 	void nextionlcdelements::setBedTarget(char temp[10])
 	{
 		char* inTemp = itoa(thermalManager.degTargetBed(), temp, 10);

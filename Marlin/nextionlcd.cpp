@@ -76,8 +76,10 @@
         {
             char temp[10];
 
-		    dispfe.setExtruderActual(); //Set current extruder temperature
-		    dispfe.setExtruderTarget(); //Set extruder target temperature
+			#if EXTRUDERS > 0
+		    	dispfe.setExtruderActual(); //Set current extruder temperature
+		    	dispfe.setExtruderTarget(); //Set extruder target temperature
+			#endif
 
 			#if HAS_HEATED_BED
 		    	dispfe.setBedActual();
@@ -88,15 +90,22 @@
 		    dispfe.setYPos();
 		    dispfe.setZPos();
 
-		    dispfe.setFan(temp);
+			#if FAN_COUNT > 0
+		    	dispfe.setFan(temp);
+			#endif
 
-		    dispfe.setPower(digitalRead(PS_ON_PIN));
+			#if defined(PS_ON_PIN)
+		    	dispfe.setPower(digitalRead(PS_ON_PIN));
+			#endif
+
             #if defined(CASE_LIGHT_PIN)
 		        dispfe.setCaseLight(digitalRead(CASE_LIGHT_PIN));
             #endif
-            #if HAS_ABL
+
+            #if ENABLED(ADVANCED_OK) //or HAS_ABL
 		        dispfe.setIsPrinting(planner.movesplanned());
             #endif
+
 		    dispfe.setIsHomed(all_axes_homed());
 
 		    dispfe.resetPageChanged();
@@ -128,20 +137,25 @@
 	    char subbuff[32] = { 0 };
 
 	    switch (receivedString[0]) {
+		#if EXTRUDERS > 0
 	    case 'E':
 		    strLength = receivedByte - 3;
 		    memcpy(subbuff, &receivedString[3], strLength);
 		    subbuff[strLength + 1] = '\0';
 
-		//thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
+			dispfe.setExtruderTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
 		    break;
+		#endif //END HAS_EXTRUDER
+		#if HAS_HEATED_BED
 	    case 'A':
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength + 1] = '\0';
-
-		    //thermalManager.setTargetBed(atoi(subbuff));
+			
+			dispfe.setBedTemperature(atoi(subbuff));
 		    break;
+		#endif //END HAS_HEATED_BED
+		#if FAN_COUNT > 0
 	    case 'F':
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
@@ -149,7 +163,8 @@
 
 		    fanSpeeds[0] = map(atoi(subbuff), 0, 100, 0, 255); //(ceil(atoi(subbuff) * 2.54));
 		    break;
-	    case 'G':
+		#endif //END FAN_COUNT
+	    case 'G': //Send g-code
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
@@ -163,6 +178,7 @@
 
 		    dispfe.setPage(atoi(subbuff));
 		    break;
+		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
@@ -170,6 +186,8 @@
 
 		    dispfe.setPower((bool)atoi(subbuff));
 		    break;
+		#endif //END PS_ON_PIN
+		#if defined(CASE_LIGHT_PIN)
 	    case 'C': //Case Light
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
@@ -177,7 +195,7 @@
 
 		    dispfe.setCaseLight((bool)atoi(subbuff));
 		    break;
-
+		#endif //END CASE_LIGHT_PIN
 	    }
     }
 

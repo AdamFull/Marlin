@@ -29,15 +29,19 @@
     class nextionlcdelements    //Nextion visual components control
     {
     public:
+        void setExtruderTemperature(int targetTemp, int extruderId);
         void setExtruderActual();
         inline NexText& gettExtruder1A() { return tExtruder1A; }
         void setExtruderTarget();
         inline NexText& gettExtruder1T() { return tExtruder1T; }
 
+        void setBedTemperature(int targetTemp);
         void setBedTarget(char temp[10]);
         inline NexText& gettBedT() { return tBedT; }
         void setBedActual();
         inline NexText& gettBedA() { return tBedA; }
+
+        inline void enableBed() { }
 
         void setXPos();
         inline NexText& gettX() { return tX; }
