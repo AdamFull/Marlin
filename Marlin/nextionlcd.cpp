@@ -59,9 +59,11 @@
     {
         bool initState = nexInit();
         dispfe.setInitStatus(initState);
-        SERIAL_ECHO_START();
-		SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
-		SERIAL_EOL();
+		#if ENABLED(NEXTION_DEBUG)
+        	SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
+			SERIAL_EOL();
+		#endif
         lcd_update();
         dispfe.setStarted();
     }
@@ -142,6 +144,9 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setHotendTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("New hotend target: ", subbuff);
+			SERIAL_EOL();
 		    break;
 		#endif //END HAS_EXTRUDER
 		#if HAS_HEATED_BED

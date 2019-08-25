@@ -1590,6 +1590,8 @@
 //=====================  (Screen type support functions)  =====================
 //=============================================================================
 
+#define NEXTION_DEBUG
+
 //#define NEXTION_TIME
 
 #if ENABLED(NEXTION_LCD)
