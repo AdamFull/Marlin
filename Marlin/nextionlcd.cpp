@@ -144,9 +144,13 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setHotendTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
-			SERIAL_ECHO_START();
-			SERIAL_ECHOLNPAIR("New hotend target: ", subbuff);
-			SERIAL_EOL();
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("New hotend target: ", subbuff);
+				SERIAL_EOL();
+				SERIAL_ECHOLNPAIR("Hotend id: ", ((int)receivedString[1]) - 1);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#endif //END HAS_EXTRUDER
 		#if HAS_HEATED_BED
@@ -156,6 +160,11 @@
 		    subbuff[strLength + 1] = '\0';
 			
 			printercontrol::setBedTemperature(atoi(subbuff));
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("New bed target: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#endif //END HAS_HEATED_BED
 		#if FAN_COUNT > 0
@@ -165,6 +174,11 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setFanSpeed(subbuff); //(ceil(atoi(subbuff) * 2.54));
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("New fan speed: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#endif //END FAN_COUNT
 	    case 'G': //Send g-code
@@ -180,6 +194,11 @@
 		    subbuff[receivedByte - strLength] = '\0';
 
 		    dispfe.setPage(atoi(subbuff));
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("Page id: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
@@ -188,6 +207,11 @@
 		    subbuff[receivedByte - strLength] = '\0';
 
 		    dispfe.setPower((bool)atoi(subbuff));
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("New power state: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#endif //END PS_ON_PIN
 		#if ENABLED(CASE_LIGHT_ENABLE)
@@ -197,6 +221,11 @@
 		    subbuff[receivedByte - strLength] = '\0';
 
 		    dispfe.setCaseLight((bool)atoi(subbuff));
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    break;
 		#endif //END CASE_LIGHT_PIN
 	    }
@@ -212,16 +241,20 @@
 
 	    dispfe.setPage(atoi(subbuff));
 
-	    SERIAL_ECHO_START();
-	    SERIAL_ECHOLNPAIR("Page: ", dispfe.getPage());
-	    SERIAL_EOL();
+		#if ENABLED(NEXTION_DEBUG)
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("Front-end page state: ", dispfe.getPage());
+			SERIAL_EOL();
+		#endif
     }
 
     void processMessage(const char * message)
     {
-        SERIAL_ECHO_START();
-	    SERIAL_ECHOLNPAIR("Received message: ", message);
-	    SERIAL_EOL();
+		#if ENABLED(NEXTION_DEBUG)
+        	SERIAL_ECHO_START();
+	    	SERIAL_ECHOLNPAIR("Received message: ", message);
+	    	SERIAL_EOL();
+		#endif
 
         char subbuff[32];
 	    char buff[5];
@@ -242,12 +275,22 @@
 			    toCounter++;
 		    }
 		    dispfe.setTLayers(subbuff);
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("Layer count: ", subbuff);
+				SERIAL_EOL();
+			#endif
 		    return;
 	    }
         else if (message[0] == 'E' && message[1] == 'T' && message[2] == 'L')
 	    {
 		    strlcpy(subbuff, &message[4], 11);
 		    dispfe.setTETA(subbuff);
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("Current TETA time: ", subbuff);
+				SERIAL_EOL();
+			#endif
 	    }
         #if ENABLED(NEXTION_TIME)
         else if (message[0] == 'T' && message[1] == 'M' && message[2] == '=')
@@ -279,9 +322,19 @@
 			    subbuff[dotLocation] = '%';
 			    subbuff[dotLocation + 1] = '\0';
 			    dispfe.setTPercentage(subbuff);
+				#if ENABLED(NEXTION_DEBUG)
+					SERIAL_ECHO_START();
+					SERIAL_ECHOLNPAIR("Percentage: ", subbuff);
+					SERIAL_EOL();
+				#endif
 			    return;
 		    }
             dispfe.setMessage(message);
+			#if ENABLED(NEXTION_DEBUG)
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("Displayed message: ", subbuff);
+				SERIAL_EOL();
+			#endif
             return;
         }
         

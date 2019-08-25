@@ -1590,11 +1590,12 @@
 //=====================  (Screen type support functions)  =====================
 //=============================================================================
 
-#define NEXTION_DEBUG
-
-//#define NEXTION_TIME
 
 #if ENABLED(NEXTION_LCD)
+
+    #define NEXTION_DEBUG
+    //#define NEXTION_TIME
+
     //visual elements id's
     #define tExtruder1A_id 28
     #define tExtruder1T_id 29
