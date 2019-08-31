@@ -8,10 +8,12 @@ void printercontrol::setHotendTemperature(int temperature, int id)
     thermalManager.setTargetHotend(temperature, id);
 }
 
+#if HAS_HEATED_BED
 void printercontrol::setBedTemperature(int temperature)
 {
     thermalManager.setTargetBed(temperature);
 }
+#endif
 
 void printercontrol::setFanSpeed(char *subbuff)
 {
@@ -26,6 +28,7 @@ float printercontrol::getCurrentPosition(unsigned axis)
     return current_position[axis];
 }
 
+#if HAS_HEATED_BED
 int16_t printercontrol::getDegTargetBed()
 {
     return thermalManager.degTargetBed();
@@ -35,6 +38,7 @@ float printercontrol::getDegBed()
 {
     return thermalManager.degBed();
 }
+#endif
 
 int16_t printercontrol::getDegTargetHotend(uint8_t id)
 {

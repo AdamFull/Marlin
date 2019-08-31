@@ -2,6 +2,7 @@
 #define DISPLAY_H
 
 #include "MarlinConfig.h"
+#include "Configiration_nextion.h"
 
 #if ENABLED(NEXTION_LCD) && !ENABLED(ULTRA_LCD)
     #include "nextionlcd.h"

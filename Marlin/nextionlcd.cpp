@@ -1,4 +1,5 @@
 #include "MarlinConfig.h"
+#include "Configiration_nextion.h"
 
 #if ENABLED(NEXTION_LCD)
 

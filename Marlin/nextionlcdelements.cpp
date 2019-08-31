@@ -1,9 +1,11 @@
 #include "nextionlcdelements.h"
 #include "printercontrol.h"
 #include "language.h"
+#include "Configiration_nextion.h"
 
 #if ENABLED(NEXTION_LCD)
 
+	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setXPos()
 	{
 		char* xPos = ftostr52sp(printercontrol::getCurrentPosition(X_AXIS));
@@ -33,6 +35,7 @@
 			strcpy(_z, zPos);
 		}
 	}
+	#endif
 
 	void nextionlcdelements::setBedTarget(char *temp)
 	{
@@ -54,6 +57,7 @@
 		}
 	}
 
+	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setExtruderTarget()
 	{
 		for(unsigned i = 0; i <= EXTRUDERS; i++)
@@ -66,6 +70,7 @@
 			}
 		}
 	}
+	#endif
 
 	void nextionlcdelements::setExtruderActual()
 	{
