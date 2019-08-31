@@ -4,17 +4,14 @@
 //
 // Nextion LCD. (P.S. if you wanna use this display, change #define SERIAL_PORT 1)
 //
-//#define NEXTION_LCD
+#define NEXTION_LCD
 
 //=============================================================================
 //======================== Nextion / Screen Selection =========================
 //=====================  (Screen type support functions)  =====================
 //=============================================================================
 
-
-#define _CAT(a, ...) a ## __VA_ARGS__
-#define SWITCH_ENABLED_      1
-#define ENABLED(b) _CAT(SWITCH_ENABLED_, b)
+#include "src/core/macros.h"
 
 #if ENABLED(NEXTION_LCD)
 

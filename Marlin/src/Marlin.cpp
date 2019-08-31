@@ -31,7 +31,7 @@
 #include "Marlin.h"
 
 #include "core/utility.h"
-#include "lcd/ultralcd.h"
+#include "display.h"
 #include "module/motion.h"
 #include "module/planner.h"
 #include "module/stepper.h"
