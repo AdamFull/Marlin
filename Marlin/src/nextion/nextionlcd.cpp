@@ -15,7 +15,6 @@
 	#include "printercontrol.h"
 	
 	#include "../module/planner.h"
-	#include "../module/configuration_store.h"
 	#include "../module/printcounter.h"
     #include "command_queue.h"
 
@@ -117,6 +116,19 @@
     void NextionUI::set_alert_status_P(PGM_P message) { processMessage(message); }
     void NextionUI::set_status_P(const char* message, const int8_t level) { processMessage(message);}
     void NextionUI::reset_status() {}
+
+	bool NextionUI::enqueue_and_echo_command(const char* cmd)
+	{
+		if (_enqueuecommand(cmd)) 
+		{
+    		SERIAL_ECHO_START();
+    		SERIAL_ECHOPAIR(MSG_ENQUEUEING, cmd);
+    		SERIAL_CHAR('"');
+    		SERIAL_EOL();
+    		return true;
+  		}
+  		return false;
+	}
 
     void NextionUI::processBuffer(const char* receivedString)
     {
