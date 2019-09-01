@@ -87,7 +87,7 @@
 
 	void nextionlcdelements::setFan(char *temp)
 	{
-		for(unsigned i = 0; i <= FAN_COUNT; i++)
+		for(unsigned i = 0; i < FAN_COUNT; i++)
 		{
 			char* inSpeed = itoa(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100), temp, 10);
 			if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())

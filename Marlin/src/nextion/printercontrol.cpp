@@ -18,7 +18,7 @@ void printercontrol::setBedTemperature(int temperature)
 
 void printercontrol::setFanSpeed(char *subbuff)
 {
-    for(unsigned i = 0; i <= FAN_COUNT; i++)
+    for(unsigned i = 0; i < FAN_COUNT; i++)
 	{
         thermalManager.set_fan_speed(i, map(atoi(subbuff), 0, 100, 0, 255));
     }

@@ -26,8 +26,6 @@ public:
     static inline void status_printf_P(const uint8_t level, PGM_P const fmt, ...) { UNUSED(level); UNUSED(fmt); }
     static void reset_status();
 
-    static bool enqueue_and_echo_command(const char* cmd);
-
     static bool has_status();
 
     static uint8_t alert_level; // Higher levels block lower levels

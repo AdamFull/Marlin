@@ -20,7 +20,7 @@
 
 	#include "../Marlin.h"
 
-	#if USE_MARLINSERIAL
+	/*#if USE_MARLINSERIAL
   		// Make an exception to use HardwareSerial too
   		#undef HardwareSerial_h
 		#include <HardwareSerial.h>
@@ -28,7 +28,7 @@
 		#define USB_STATUS true
 	#else
   		#define USB_STATUS Serial2
-	#endif
+	#endif*/
 
     #if ENABLED(NEXTION_TIME)
         #include "TimeLib.h"
@@ -117,19 +117,6 @@
     void NextionUI::set_status_P(const char* message, const int8_t level) { processMessage(message);}
     void NextionUI::reset_status() {}
 
-	bool NextionUI::enqueue_and_echo_command(const char* cmd)
-	{
-		if (_enqueuecommand(cmd)) 
-		{
-    		SERIAL_ECHO_START();
-    		SERIAL_ECHOPAIR(MSG_ENQUEUEING, cmd);
-    		SERIAL_CHAR('"');
-    		SERIAL_EOL();
-    		return true;
-  		}
-  		return false;
-	}
-
     void NextionUI::processBuffer(const char* receivedString)
     {
         int receivedByte = strlen(receivedString);
@@ -186,7 +173,7 @@
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
 
-		    enqueue_and_echo_command(subbuff);
+		    queue.enqueue_one_now(subbuff);
 		    break;
 	    case 'P':
 		    strLength = receivedByte - 2;
