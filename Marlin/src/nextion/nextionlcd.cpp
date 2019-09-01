@@ -15,11 +15,8 @@
 	#include "printercontrol.h"
 	
 	#include "../module/planner.h"
-	//#include "stepper.h"
-	//#include "duration_t.h"
+	#include "../module/configuration_store.h"
 	#include "../module/printcounter.h"
-	//#include "parser.h"
-	//#include "configuration_store.h"
     #include "command_queue.h"
 
 	#include "../Marlin.h"
@@ -177,7 +174,7 @@
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
 
-		    //enqueue_and_echo_command(subbuff);
+		    enqueue_and_echo_command(subbuff);
 		    break;
 	    case 'P':
 		    strLength = receivedByte - 2;
