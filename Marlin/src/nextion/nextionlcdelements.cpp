@@ -1,6 +1,7 @@
 #include "nextionlcdelements.h"
 #include "printercontrol.h"
 #include "../../Configiration_nextion.h"
+#include "../libs/numtostr.h"
 
 #if ENABLED(NEXTION_LCD)
 
@@ -61,7 +62,7 @@
 	{
 		for(unsigned i = 0; i <= EXTRUDERS; i++)
 		{
-			char* inTemp = itostr3left(printercontrol::getDegTargetHotend(i));
+			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
 			if (strcmp(inTemp, _et) != 0 || _pageChanged || !isStarted())
 			{
 				this->tExtruder1T.setText(inTemp);
