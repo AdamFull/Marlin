@@ -60,10 +60,10 @@
 	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setExtruderTarget()
 	{
-		for(unsigned i = 0; i <= EXTRUDERS; i++)
+		for(unsigned i = 1; i <= EXTRUDERS; i++)
 		{
 			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
-			if (strcmp(inTemp, _et) != 0 || _pageChanged || !isStarted())
+			if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
 			{
 				this->tExtruder1T.setText(inTemp);
 				strcpy(_et, inTemp);
@@ -74,7 +74,7 @@
 
 	void nextionlcdelements::setExtruderActual()
 	{
-		for(unsigned i = 0; i <= EXTRUDERS; i++)
+		for(unsigned i = 1; i <= EXTRUDERS; i++)
 		{
 			uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 			if (_ea != average || _pageChanged || !isStarted())

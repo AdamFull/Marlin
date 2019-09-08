@@ -114,7 +114,7 @@
 	    char _et[4], _fan[4], _bt[4];
 	    uint8_t  _ba, _ea;
 	    int  _page = 0;
-	    bool _pageChanged;
+	    bool _pageChanged = false;
 	    bool _caseLight, _power = 0;
 	    bool _isPrinting = false;
 	    bool _isHomed = false;

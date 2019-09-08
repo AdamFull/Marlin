@@ -48,10 +48,7 @@ int16_t printercontrol::getDegTargetHotend(uint8_t id)
 
 float printercontrol::getDegHotend(uint8_t id)
 {
-    if(id <= HOTENDS)
-        return thermalManager.degHotend(id);
-    else
-        return 0.0f;
+    return thermalManager.degHotend(id);
 }
 
 int printercontrol::getFanSpeed(int id)
