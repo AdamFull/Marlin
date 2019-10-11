@@ -145,17 +145,28 @@
             #endif
 
 			#if ENABLED(SDSUPPORT)
-				if(card.isDetected() && !readed)
-				{
-					files_count = card.get_num_Files();
-					for(uint16_t i = 0; i<files_count; i++)
+				const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
+      				if (sd_status) 
 					{
-						const char* file_name;
-						card.getfilename(i, file_name);
-						files_list[i] = file_name;
+						safe_delay(300); // Some boards need a delay to get settled
+        				card.initsd();
+						card.beginautostart();  // Initial boot
+						files_count = card.get_num_Files();
+						if(card.isDetected())
+						{
+							for(uint16_t i = 0; i<files_count; i++)
+							{
+								const char* file_name;
+								card.getfilename(i, file_name);
+								safe_delay(100);
+								SERIAL_ECHO_START();
+								SERIAL_ECHOLNPAIR("File: ", file_name);
+								SERIAL_EOL();
+								files_list[i] = file_name;
+							}
+							dispfe.update_sd(files_list, files_less, files_count);
+						}
 					}
-					readed = true;
-				}
 				else
 				{
 					readed = false;
