@@ -5,6 +5,17 @@
 
 #if ENABLED(NEXTION_LCD)
 
+	#if ENABLED(SDSUPPORT)
+		void nextionlcdelements::update_sd(const char* files_list[], uint16_t files_less, uint16_t files_count)
+		{
+			for(unsigned i = 0; i < num_of_lines; i++)
+				if(files_less+num_of_lines>files_count)
+					list_lines[i].setText("");
+				else
+					list_lines[i].setText(files_list[i+files_less]);
+		}
+	#endif
+
 	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setXPos()
 	{

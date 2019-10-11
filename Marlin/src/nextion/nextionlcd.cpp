@@ -8,6 +8,8 @@
     uint16_t files_less;
     uint8_t lcd_sd_status;
 
+	bool readed = false;
+
 	#if ENABLED(SDSUPPORT)
   		#include "../sd/cardreader.h"
   		//#include "SdFatConfig.h"
@@ -143,7 +145,7 @@
             #endif
 
 			#if ENABLED(SDSUPPORT)
-				if(card.isDetected())
+				if(card.isDetected() && !readed)
 				{
 					files_count = card.get_num_Files();
 					for(uint16_t i = 0; i<files_count; i++)
@@ -152,7 +154,13 @@
 						card.getfilename(i, file_name);
 						files_list[i] = file_name;
 					}
+					readed = true;
 				}
+				else
+				{
+					readed = false;
+				}
+				
 			#endif
 
 			#if HAS_PRINT_PROGRESS
@@ -244,9 +252,8 @@
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
-			SERIAL_ECHO_START();
-			SERIAL_ECHOLNPAIR("SD_update", subbuff);
-			SERIAL_EOL();
+			files_less += atoi(subbuff);
+			dispfe.update_sd(files_list, files_less, files_count);
 			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status

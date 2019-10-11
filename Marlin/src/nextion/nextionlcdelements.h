@@ -5,6 +5,8 @@
 
 #if ENABLED(NEXTION_LCD)
 
+    #define num_of_lines 6
+
     #include "NextionLib/Nextion.h"
 
     #if ENABLED(NEXTION_TIME)
@@ -64,6 +66,8 @@
 	    void resetPageChanged();
 	    bool pageChanged();
 
+        void update_sd(const char* files_list[], uint16_t files_less, uint16_t files_count); //SD card scroll list
+
         void setIsPrinting(bool status);
 	    void setIsHomed(bool status);
 	    bool getIsHomed();
@@ -109,6 +113,9 @@
 	    NexTimer tmSS = NexTimer(main_page, tmSS_id, "tmSS");
         
 	    NexVariable vaCounter = NexVariable(main_page, vaCounter_id, "vaCounter");
+
+        NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
+                                              NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 
         char _x[7], _y[7], _z[7];
 	    char _et[4], _fan[4], _bt[4];
