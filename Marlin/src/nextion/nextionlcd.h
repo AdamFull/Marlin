@@ -28,6 +28,8 @@ public:
 
     static bool has_status();
 
+    //static void update_sd();
+
     static uint8_t alert_level; // Higher levels block lower levels
     static inline void reset_alert_level() { alert_level = 0; }
     

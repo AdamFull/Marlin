@@ -85,7 +85,7 @@
 	    NexText tX = NexText(main_page, tX_id, "tX");
 	    NexText tY = NexText(main_page, tY_id, "tY");
 	    NexText tZ = NexText(main_page, tZ_id, "tZ");
-
+        
 	    NexText tMessage = NexText(main_page, tMessage_id, "MainPage.tMessage");
 
 	    NexText tFan = NexText(main_page, tFan_id, "tFan");

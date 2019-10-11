@@ -3,9 +3,14 @@
 
 #if ENABLED(NEXTION_LCD)
 
+	uint16_t files_count;
+    const char* files_list[128];
+    uint16_t files_less;
+    uint8_t lcd_sd_status;
+
 	#if ENABLED(SDSUPPORT)
   		#include "../sd/cardreader.h"
-  		#include "SdFatConfig.h"
+  		//#include "SdFatConfig.h"
 	#else
   		#define LONG_FILENAME_LENGTH 0
 	#endif
@@ -15,7 +20,7 @@
 	#include "printercontrol.h"
 	
 	#include "../module/planner.h"
-	#include "../module/printcounter.h"
+	//#include "../module/printcounter.h"
     #include "command_queue.h"
 
 	#include "../Marlin.h"
@@ -57,6 +62,35 @@
 			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 			SERIAL_EOL();
 		#endif
+		
+		#if ENABLED(INIT_SDCARD_ON_BOOT)
+			const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
+			if (sd_status != lcd_sd_status && card.isDetected()) 
+			{
+				uint8_t old_sd_status = lcd_sd_status; // prevent re-entry to this block!
+      			lcd_sd_status = sd_status;
+      			if (sd_status) 
+				{
+        			safe_delay(500); // Some boards need a delay to get settled
+        			card.initsd();
+        			if (old_sd_status == 2)
+          				card.beginautostart();  // Initial boot
+        			else
+          				set_status_P(PSTR(MSG_SD_INSERTED));
+      			}
+      		#if PIN_EXISTS(SD_DETECT)
+        		else 
+				{
+          			card.release();
+          			if (old_sd_status != 2) 
+					{
+            			set_status_P(PSTR(MSG_SD_REMOVED));
+          			}
+        		}
+			#endif
+			}
+		#endif
+		
         update();
         dispfe.setStarted();
     }
@@ -107,6 +141,26 @@
 		        //dispfe.setTime(year(), month(), day(), hour(), minute());
 		        dispfe.setTime();
             #endif
+
+			#if ENABLED(SDSUPPORT)
+				if(card.isDetected())
+				{
+					files_count = card.get_num_Files();
+					for(uint16_t i = 0; i<files_count; i++)
+					{
+						const char* file_name;
+						card.getfilename(i, file_name);
+						files_list[i] = file_name;
+					}
+				}
+			#endif
+
+			#if HAS_PRINT_PROGRESS
+				uint8_t progress = 0;
+				#if ENABLED(SDSUPPORT)
+					if (IS_SD_PRINTING()) progress = card.percentDone();
+				#endif
+			#endif
 
 		    next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
         }
@@ -187,6 +241,13 @@
 				SERIAL_EOL();
 			#endif
 		    break;
+		case 'S':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("SD_update", subbuff);
+			SERIAL_EOL();
+			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
 		    strLength = receivedByte - 2;

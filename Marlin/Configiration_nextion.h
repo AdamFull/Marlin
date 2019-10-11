@@ -17,6 +17,7 @@
 
     #define NEXTION_DEBUG
     //#define NEXTION_TIME
+    #define SD_LINES 6
 
     //visual elements id's
     #define tExtruder1A_id 28
@@ -52,35 +53,15 @@
     #define pExtruding_e_id 23
     #define pHome_e_id 24
 
-    #define HAS_LOAD_PAGE
-    #define HAS_SETTING_PAGE
-    #define HAS_TEMPERATURE_PAGE
-    #define HAS_MOVEMENT_PAGE
-    #define HAS_GCODE_PAGE
-    #define HAS_SAVER_PAGE
-
-    //pages id's
-    #if ENABLED(HAS_LOAD_PAGE)
-      #define load_page 0
-    #endif
-
-    #define main_page 1 
-    #define menu_page 2 
-    #if ENABLED(HAS_SETTING_PAGE)
-      #define settings_page 3
-    #endif
-    #if ENABLED(HAS_TEMPERATURE_PAGE)
-      #define temperature_page 4 
-    #endif
-    #if ENABLED(HAS_MOVEMENT_PAGE)
-      #define movement_page 5
-    #endif
-    #if ENABLED(HAS_GCODE_PAGE)
-      #define gcode_page 6
-    #endif
-    #if ENABLED(HAS_SAVER_PAGE)
-      #define screenSaver_page 7
-    #endif
+    //page id's
+    #define load_page 0
+    #define main_page 2 
+    #define menu_page 4 
+    #define settings_page 6
+    #define SD_page 5
+    //#define movement_page 5
+    //#define gcode_page 6
+    #define screenSaver_page 7
 
 #endif
 
