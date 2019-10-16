@@ -6,13 +6,18 @@
 #if ENABLED(NEXTION_LCD)
 
 	#if ENABLED(SDSUPPORT)
-		void nextionlcdelements::update_sd(const char* files_list[], uint16_t files_less, uint16_t files_count)
+		void nextionlcdelements::update_sd(char* files_list[], uint16_t files_less, uint16_t files_count)
 		{
 			for(unsigned i = 0; i < num_of_lines; i++)
-				if(files_less+num_of_lines>files_count)
-					list_lines[i].setText("");
-				else
+			{
+				if(files_count<=num_of_lines)
 					list_lines[i].setText(files_list[i+files_less]);
+				else if(files_less+i>files_count)
+					list_lines[i].setText("");
+				{
+					list_lines[i].setText(files_list[i+files_less]);
+				}
+			}
 		}
 	#endif
 

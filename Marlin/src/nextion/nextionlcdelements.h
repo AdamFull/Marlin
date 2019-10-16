@@ -66,7 +66,9 @@
 	    void resetPageChanged();
 	    bool pageChanged();
 
-        void update_sd(const char* files_list[], uint16_t files_less, uint16_t files_count); //SD card scroll list
+        inline void setSDState(bool enabled) { pSD.setPic(enabled ? 22 : 23); }
+        inline void setSDFileCount(uint16_t counted) { hScroll.setMaxval(counted <= num_of_lines ? 0 : counted - num_of_lines); }
+        void update_sd(char* files_list[], uint16_t files_less, uint16_t files_count); //SD card scroll list
 
         void setIsPrinting(bool status);
 	    void setIsHomed(bool status);
@@ -90,30 +92,33 @@
 	    NexText tY = NexText(main_page, tY_id, "tY");
 	    NexText tZ = NexText(main_page, tZ_id, "tZ");
         
-	    NexText tMessage = NexText(main_page, tMessage_id, "MainPage.tMessage");
+	    NexText tMessage = NexText(main_page, tMessage_id, "main_page.tMessage");
 
 	    NexText tFan = NexText(main_page, tFan_id, "tFan");
 
-	    NexText tLayers = NexText(main_page, tLayers_id, "MainPage.tLayers");
-	    NexText tETA = NexText(main_page, tETA_id, "MainPage.tETA");
-	    NexText tPercentage = NexText(main_page, tPercentage_id, "MainPage.tPercentage");
+	    NexText tLayers = NexText(main_page, tLayers_id, "main_page.tLayers");
+	    NexText tETA = NexText(main_page, tETA_id, "main_page.tETA");
+	    NexText tPercentage = NexText(main_page, tPercentage_id, "main_page.tPercentage");
 
-        NexDSButton btPower = NexDSButton(menu_page, btPower_id, "MainMenu.btPower");
-	    NexDSButton btLight = NexDSButton(menu_page, btLight_id, "MainMenu.btLight");
+        NexDSButton btPower = NexDSButton(menu_page, btPower_id, "menu_page.btPower");
+	    NexDSButton btLight = NexDSButton(menu_page, btLight_id, "menu_page.btLight");
 
-	    NexPicture pPower = NexPicture(main_page, pPower_id, "MainPage.pPower");
-	    NexPicture pLight = NexPicture(main_page, pLight_id, "MainPage.pLight");
+	    NexPicture pPower = NexPicture(main_page, pPower_id, "main_page.pPower");
+	    NexPicture pLight = NexPicture(main_page, pLight_id, "main_page.pLight");
 
-	    NexVariable vaPower = NexVariable(menu_page, vaPower_id, "MainMenu.vaPower");
-	    NexVariable vaLight = NexVariable(menu_page, vaLight_id, "MainMenu.vaLight");
+	    NexVariable vaPower = NexVariable(menu_page, vaPower_id, "menu_page.vaPower");
+	    NexVariable vaLight = NexVariable(menu_page, vaLight_id, "menu_page.vaLight");
 
-	    NexPicture pHome = NexPicture(main_page, pHome_id, "MainPage.pHome");
-	    NexPicture pExtruding = NexPicture(main_page, pExtruding_id, "MainPage.pExtruding");
+	    NexPicture pHome = NexPicture(main_page, pHome_id, "main_page.pHome");
+	    NexPicture pExtruding = NexPicture(main_page, pExtruding_id, "main_page.pExtruding");
 
 	    NexTimer tmSS = NexTimer(main_page, tmSS_id, "tmSS");
         
 	    NexVariable vaCounter = NexVariable(main_page, vaCounter_id, "vaCounter");
 
+        NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
+        NexPicture pSD = NexPicture(main_page, 25, "main_page.pSD");
+        NexSlider hScroll = NexSlider(SD_page, 2, "sd_page.hScroll");
         NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
                                               NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 

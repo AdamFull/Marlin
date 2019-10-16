@@ -4,7 +4,7 @@
 #if ENABLED(NEXTION_LCD)
 
 	uint16_t files_count;
-    const char* files_list[128];
+    char* files_list[64];
     uint16_t files_less;
     uint8_t lcd_sd_status;
 
@@ -51,7 +51,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  500
+    #define LCD_UPDATE_INTERVAL  100
 
     millis_t next_lcd_update_ms;
 
@@ -63,34 +63,6 @@
         	SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 			SERIAL_EOL();
-		#endif
-		
-		#if ENABLED(INIT_SDCARD_ON_BOOT)
-			const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
-			if (sd_status != lcd_sd_status && card.isDetected()) 
-			{
-				uint8_t old_sd_status = lcd_sd_status; // prevent re-entry to this block!
-      			lcd_sd_status = sd_status;
-      			if (sd_status) 
-				{
-        			safe_delay(500); // Some boards need a delay to get settled
-        			card.initsd();
-        			if (old_sd_status == 2)
-          				card.beginautostart();  // Initial boot
-        			else
-          				set_status_P(PSTR(MSG_SD_INSERTED));
-      			}
-      		#if PIN_EXISTS(SD_DETECT)
-        		else 
-				{
-          			card.release();
-          			if (old_sd_status != 2) 
-					{
-            			set_status_P(PSTR(MSG_SD_REMOVED));
-          			}
-        		}
-			#endif
-			}
 		#endif
 		
         update();
@@ -145,32 +117,43 @@
             #endif
 
 			#if ENABLED(SDSUPPORT)
-				const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
+				static bool last_sd_status = false;
+    			const bool sd_status = IS_SD_INSERTED();
+    			if (sd_status != last_sd_status) 
+				{
+      				last_sd_status = sd_status;
       				if (sd_status) 
 					{
-						safe_delay(300); // Some boards need a delay to get settled
         				card.initsd();
-						card.beginautostart();  // Initial boot
-						files_count = card.get_num_Files();
-						if(card.isDetected())
+						//card.beginautostart();
+        				if (card.isDetected() && dispfe.getPage() == 5)
 						{
+							files_count = card.get_num_Files();
+							dispfe.setSDState(true);
+							dispfe.setSDFileCount(files_count);
 							for(uint16_t i = 0; i<files_count; i++)
 							{
-								const char* file_name;
-								card.getfilename(i, file_name);
-								safe_delay(100);
-								SERIAL_ECHO_START();
-								SERIAL_ECHOLNPAIR("File: ", file_name);
-								SERIAL_EOL();
-								files_list[i] = file_name;
+								card.getfilename(i);
+								files_list[i] = card.longest_filename();
 							}
-							dispfe.update_sd(files_list, files_less, files_count);
+							dispfe.update_sd(files_list, files_less, files_count);	
 						}
-					}
-				else
-				{
-					readed = false;
-				}
+        				else
+						{
+							files_count = 0;
+							files_less = 0;
+							memset(files_list, 0, sizeof(files_list));
+							dispfe.setSDFileCount(files_count);
+							dispfe.setSDState(false);
+						}
+      				}
+      				else 
+					{
+        				const bool ok = card.isDetected();
+        				card.release();
+        				//if (ok) dispfe.setSDState(false);
+      				}
+    			}
 				
 			#endif
 
@@ -263,8 +246,11 @@
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
-			files_less += atoi(subbuff);
-			dispfe.update_sd(files_list, files_less, files_count);
+			if(files_count>6)
+			{
+				files_less += atoi(subbuff);
+				dispfe.update_sd(files_list, files_less, files_count);
+			}
 			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
