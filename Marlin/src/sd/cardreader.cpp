@@ -343,7 +343,7 @@ void CardReader::initsd() {
     #endif
   ) {
     //if (!sd2card.init(SPI_HALF_SPEED,SDSS))
-    SERIAL_ECHO_MSG(MSG_SD_INIT_FAIL);
+    //SERIAL_ECHO_MSG(MSG_SD_INIT_FAIL);
   }
   else if (!volume.init(&sd2card))
     SERIAL_ERROR_MSG(MSG_SD_VOL_INIT_FAIL);
@@ -351,7 +351,7 @@ void CardReader::initsd() {
     SERIAL_ERROR_MSG(MSG_SD_OPENROOT_FAIL);
   else {
     flag.detected = true;
-    SERIAL_ECHO_MSG(MSG_SD_CARD_OK);
+    //SERIAL_ECHO_MSG(MSG_SD_CARD_OK);
     #if ENABLED(EEPROM_SETTINGS) && NONE(FLASH_EEPROM_EMULATION, SPI_EEPROM, I2C_EEPROM)
       settings.first_load();
     #endif

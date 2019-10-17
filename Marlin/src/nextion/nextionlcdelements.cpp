@@ -6,7 +6,7 @@
 #if ENABLED(NEXTION_LCD)
 
 	#if ENABLED(SDSUPPORT)
-		void nextionlcdelements::update_sd(char* files_list[], uint16_t files_less, uint16_t files_count)
+		void nextionlcdelements::update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count)
 		{
 			for(unsigned i = 0; i < num_of_lines; i++)
 			{

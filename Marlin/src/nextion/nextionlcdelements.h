@@ -68,7 +68,7 @@
 
         inline void setSDState(bool enabled) { pSD.setPic(enabled ? 22 : 23); }
         inline void setSDFileCount(uint16_t counted) { hScroll.setMaxval(counted <= num_of_lines ? 0 : counted - num_of_lines); }
-        void update_sd(char* files_list[], uint16_t files_less, uint16_t files_count); //SD card scroll list
+        void update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count); //SD card scroll list
 
         void setIsPrinting(bool status);
 	    void setIsHomed(bool status);

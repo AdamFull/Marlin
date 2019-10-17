@@ -4,9 +4,12 @@
 #if ENABLED(NEXTION_LCD)
 
 	uint16_t files_count;
-    char* files_list[64];
+    char files_list[64][27];
     uint16_t files_less;
-    uint8_t lcd_sd_status;
+	bool sd_readed;
+	#if ENABLED(INIT_SDCARD_ON_BOOT)
+        uint8_t lcd_sd_status;
+    #endif
 
 	bool readed = false;
 
@@ -57,6 +60,13 @@
 
     void NextionUI::init() 
     {
+		#if ENABLED(SDSUPPORT)
+			#if ENABLED(INIT_SDCARD_ON_BOOT)
+      			lcd_sd_status = 2; // UNKNOWN
+				card.initsd();
+    		#endif
+		#endif
+
         bool initState = nexInit();
         dispfe.setInitStatus(initState);
 		#if ENABLED(NEXTION_DEBUG)
@@ -117,43 +127,29 @@
             #endif
 
 			#if ENABLED(SDSUPPORT)
-				static bool last_sd_status = false;
-    			const bool sd_status = IS_SD_INSERTED();
-    			if (sd_status != last_sd_status) 
+				card.initsd();
+				dispfe.setSDState(card.flag.detected);
+				if(card.isDetected())
 				{
-      				last_sd_status = sd_status;
-      				if (sd_status) 
+					if(!sd_readed)
 					{
-        				card.initsd();
-						//card.beginautostart();
-        				if (card.isDetected() && dispfe.getPage() == 5)
+						files_count = card.get_num_Files();
+						dispfe.setSDFileCount(files_count);
+						for(uint16_t i = 0; i<files_count; i++)
 						{
-							files_count = card.get_num_Files();
-							dispfe.setSDState(true);
-							dispfe.setSDFileCount(files_count);
-							for(uint16_t i = 0; i<files_count; i++)
-							{
-								card.getfilename(i);
-								files_list[i] = card.longest_filename();
-							}
-							dispfe.update_sd(files_list, files_less, files_count);	
+							card.getfilename(i);
+							strcpy(files_list[i], card.longest_filename());
 						}
-        				else
-						{
-							files_count = 0;
-							files_less = 0;
-							memset(files_list, 0, sizeof(files_list));
-							dispfe.setSDFileCount(files_count);
-							dispfe.setSDState(false);
-						}
-      				}
-      				else 
-					{
-        				const bool ok = card.isDetected();
-        				card.release();
-        				//if (ok) dispfe.setSDState(false);
-      				}
-    			}
+						sd_readed = true;	
+					}
+				}
+				else
+				{
+					sd_readed = false;
+					files_count = 0;
+					memset(files_list[0], 0, 27*64);
+        			card.release();
+				}
 				
 			#endif
 
@@ -163,6 +159,8 @@
 					if (IS_SD_PRINTING()) progress = card.percentDone();
 				#endif
 			#endif
+
+			if(sd_readed) dispfe.update_sd(files_list, files_less, files_count);
 
 		    next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
         }
