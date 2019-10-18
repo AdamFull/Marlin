@@ -7,6 +7,7 @@
     char files_list[64][27];
     uint16_t files_less;
 	bool sd_readed;
+	bool sd_need_update;
 	#if ENABLED(INIT_SDCARD_ON_BOOT)
         uint8_t lcd_sd_status;
     #endif
@@ -54,7 +55,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  100
+    #define LCD_UPDATE_INTERVAL  200
 
     millis_t next_lcd_update_ms;
 
@@ -153,14 +154,23 @@
 				
 			#endif
 
+			if(sd_readed && dispfe.getPage() == 5)
+			{
+				if(!sd_need_update)
+					dispfe.update_sd(files_list, files_less, files_count);
+				sd_need_update = true;
+			}
+			else
+			{
+				sd_need_update = false;
+			}
+
 			#if HAS_PRINT_PROGRESS
 				uint8_t progress = 0;
 				#if ENABLED(SDSUPPORT)
 					if (IS_SD_PRINTING()) progress = card.percentDone();
 				#endif
 			#endif
-
-			if(sd_readed) dispfe.update_sd(files_list, files_less, files_count);
 
 		    next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
         }
@@ -244,11 +254,8 @@
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
-			if(files_count>6)
-			{
-				files_less += atoi(subbuff);
-				dispfe.update_sd(files_list, files_less, files_count);
-			}
+			files_less += atoi(subbuff);
+			dispfe.update_sd(files_list, files_less, files_count);
 			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status

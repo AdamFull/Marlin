@@ -67,8 +67,21 @@
 	    bool pageChanged();
 
         inline void setSDState(bool enabled) { pSD.setPic(enabled ? 22 : 23); }
-        inline void setSDFileCount(uint16_t counted) { hScroll.setMaxval(counted <= num_of_lines ? 0 : counted - num_of_lines); }
+        inline void setSDFileCount(uint16_t counted) 
+        {
+            nof = counted;
+            uint16_t max_val = counted <= num_of_lines ? 0 : counted - num_of_lines;
+            hScroll.setMaxval(max_val);
+            hScroll.setValue(max_val);
+        }
         void update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count); //SD card scroll list
+        uint16_t get_nof() { return nof; }
+        const char* get_sd_text(int pos) 
+        {
+            char* buffer;
+            list_lines[pos].getText(buffer, 27);
+            return buffer;
+        }
 
         void setIsPrinting(bool status);
 	    void setIsHomed(bool status);
@@ -134,6 +147,8 @@
 
         char ext[10];
 	    int _minutes;
+
+        uint16_t nof;
 
         bool init_status = false;
     };
