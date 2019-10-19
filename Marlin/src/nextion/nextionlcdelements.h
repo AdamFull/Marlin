@@ -43,12 +43,12 @@
 
         void setFan(char *temp);
 
-        void setTLayers(const char * inStr);
+        //void setTLayers(const char * inStr);
         void setTETA(const char * inStr);
         void setTPercentage(const char * inStr);
 
-        void setPower(bool status);
-        void setCaseLight(bool status);
+        //void setPower(bool status);
+        //void setCaseLight(bool status);
 
         #if ENABLED(NEXTION_TIME)
 	        void setTime(int year, int month, int day, int hour, int minute);
@@ -84,8 +84,9 @@
         }
 
         void setIsPrinting(bool status);
-	    void setIsHomed(bool status);
-	    bool getIsHomed();
+        void setProgress(uint8_t perc);
+	    //void setIsHomed(bool status);
+	    //bool getIsHomed();
 
         void setStarted();
 	    bool isStarted();
@@ -104,30 +105,17 @@
 	    NexText tX = NexText(main_page, tX_id, "tX");
 	    NexText tY = NexText(main_page, tY_id, "tY");
 	    NexText tZ = NexText(main_page, tZ_id, "tZ");
+
+        NexVariable vaIsPrinting = NexVariable(main_page, 27, "main_page.vaIsPrinting");
         
-	    NexText tMessage = NexText(main_page, tMessage_id, "main_page.tMessage");
+	    NexText tMessage = NexText(printing_page, 14, "printing_page.tMessage");
 
-	    NexText tFan = NexText(main_page, tFan_id, "tFan");
+	    NexText tFan = NexText(main_page, 24, "tFan");
 
-	    NexText tLayers = NexText(main_page, tLayers_id, "main_page.tLayers");
-	    NexText tETA = NexText(main_page, tETA_id, "main_page.tETA");
-	    NexText tPercentage = NexText(main_page, tPercentage_id, "main_page.tPercentage");
-
-        NexDSButton btPower = NexDSButton(menu_page, btPower_id, "menu_page.btPower");
-	    NexDSButton btLight = NexDSButton(menu_page, btLight_id, "menu_page.btLight");
-
-	    NexPicture pPower = NexPicture(main_page, pPower_id, "main_page.pPower");
-	    NexPicture pLight = NexPicture(main_page, pLight_id, "main_page.pLight");
-
-	    NexVariable vaPower = NexVariable(menu_page, vaPower_id, "menu_page.vaPower");
-	    NexVariable vaLight = NexVariable(menu_page, vaLight_id, "menu_page.vaLight");
-
-	    NexPicture pHome = NexPicture(main_page, pHome_id, "main_page.pHome");
-	    NexPicture pExtruding = NexPicture(main_page, pExtruding_id, "main_page.pExtruding");
-
-	    NexTimer tmSS = NexTimer(main_page, tmSS_id, "tmSS");
-        
-	    NexVariable vaCounter = NexVariable(main_page, vaCounter_id, "vaCounter");
+	    //NexText tLayers = NexText(printing_page, tLayers_id, "main_page.tLayers");
+	    NexText tETA = NexText(printing_page, 16, "printing_page.tETA");
+	    NexText tPercentage = NexText(printing_page, 15, "printing_page.tPercentage");
+        NexProgressBar jPrintProgress = NexProgressBar(printing_page, 1, "printing_page.jPrintProgress");
 
         NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
         NexPicture pSD = NexPicture(main_page, 25, "main_page.pSD");

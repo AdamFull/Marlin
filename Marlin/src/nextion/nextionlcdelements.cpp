@@ -136,36 +136,36 @@
 		return _pageChanged;
 	}
 
-	void nextionlcdelements::setPower(bool status)
-	{
-		if (_power != status || _pageChanged || !isStarted())
-		{
-			this->_power = status;
+	// void nextionlcdelements::setPower(bool status)
+	// {
+	// 	if (_power != status || _pageChanged || !isStarted())
+	// 	{
+	// 		this->_power = status;
 
-			this->vaPower.setValue(_power ? 1 : 0);
-			if (_page == 2)
-				this->btPower.setValue(_power ? 1 : 0);
-			else if (_page == 1)
-            	status ? this->pPower.setPic(pPower_e_id) : this->pPower.setPic(pEmpty_id);
-		}
-	}
+	// 		this->vaPower.setValue(_power ? 1 : 0);
+	// 		if (_page == 2)
+	// 			this->btPower.setValue(_power ? 1 : 0);
+	// 		else if (_page == 1)
+    //         	status ? this->pPower.setPic(pPower_e_id) : this->pPower.setPic(pEmpty_id);
+	// 	}
+	// }
 
-	void nextionlcdelements::setCaseLight(bool status)
-	{
-		if (_caseLight != status || _pageChanged || !isStarted())
-		{
-			this->_caseLight = status;
+	// void nextionlcdelements::setCaseLight(bool status)
+	// {
+	// 	if (_caseLight != status || _pageChanged || !isStarted())
+	// 	{
+	// 		this->_caseLight = status;
 
-			this->vaLight.setValue(_caseLight ? 1 : 0);
-			if (_page == 2)
-				this->btLight.setValue(_caseLight ? 1 : 0);
-			else if (_page == 1)
-			{
-				//uint32_t val = atoi(subbuff);
-            	status == 1 ? this->pLight.setPic(pLight_e_id) : this->pLight.setPic(pEmpty_id);
-			}
-		}
-	}
+	// 		this->vaLight.setValue(_caseLight ? 1 : 0);
+	// 		if (_page == 2)
+	// 			this->btLight.setValue(_caseLight ? 1 : 0);
+	// 		else if (_page == 1)
+	// 		{
+	// 			//uint32_t val = atoi(subbuff);
+    //         	status == 1 ? this->pLight.setPic(pLight_e_id) : this->pLight.setPic(pEmpty_id);
+	// 		}
+	// 	}
+	// }
 
 	void nextionlcdelements::setIsPrinting(bool status)
 	{
@@ -175,32 +175,28 @@
 
 			if (status == 1)
 			{
-				this->pExtruding.setPic(pExtruding_e_id);
-				this->tmSS.disable();
-				this->vaCounter.setValue(0);
+				vaIsPrinting.setValue(1);
 			}
 			else
 			{
-				this->pExtruding.setPic(pEmpty_id);
-				this->tmSS.enable();
-				this->vaCounter.setValue(0);
+				vaIsPrinting.setValue(0);
 			}
 		}
 	}
 
-	void nextionlcdelements::setIsHomed(bool status)
-	{
-		if (_isHomed != status || _pageChanged || !isStarted())
-		{
-			_isHomed = status;
-        	status == 1 ? this->pHome.setPic(pHome_e_id) : this->pHome.setPic(pEmpty_id);
-		}
-	}
+	// void nextionlcdelements::setIsHomed(bool status)
+	// {
+	// 	if (_isHomed != status || _pageChanged || !isStarted())
+	// 	{
+	// 		_isHomed = status;
+    //     	status == 1 ? this->pHome.setPic(pHome_e_id) : this->pHome.setPic(pEmpty_id);
+	// 	}
+	// }
 
-	bool nextionlcdelements::getIsHomed()
-	{
-		return _isHomed;
-	}
+	// bool nextionlcdelements::getIsHomed()
+	// {
+	// 	return _isHomed;
+	// }
 
 	void nextionlcdelements::setStarted()
 	{
@@ -218,10 +214,10 @@
 		this->tMessage.setText(inStr);
 	}
 
-	void nextionlcdelements::setTLayers(const char * inStr)
-	{
-		this->tLayers.setText(inStr);
-	}
+	// void nextionlcdelements::setTLayers(const char * inStr)
+	// {
+	// 	this->tLayers.setText(inStr);
+	// }
 
 	void nextionlcdelements::setTETA(const char * inStr)
 	{

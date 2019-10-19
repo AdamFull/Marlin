@@ -107,7 +107,7 @@
 			#endif
 
 			#if defined(PS_ON_PIN)
-		    	dispfe.setPower(digitalRead(PS_ON_PIN));
+		    	//dispfe.setPower(digitalRead(PS_ON_PIN));
 			#endif
 
             #if ENABLED(CASE_LIGHT_ENABLE)
@@ -118,7 +118,7 @@
 		        dispfe.setIsPrinting(planner.movesplanned());
             #endif
 
-		    dispfe.setIsHomed(all_axes_homed());
+		    //dispfe.setIsHomed(all_axes_homed());
 
 		    dispfe.resetPageChanged();
 
@@ -254,8 +254,11 @@
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
-			files_less += atoi(subbuff);
-			dispfe.update_sd(files_list, files_less, files_count);
+			if(files_count > 6 && (files_less >= 00 && files_less <= files_count))
+			{
+				files_less += atoi(subbuff);
+				dispfe.update_sd(files_list, files_less, files_count);
+			}
 			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
@@ -263,7 +266,7 @@
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[receivedByte - strLength] = '\0';
 
-		    dispfe.setPower((bool)atoi(subbuff));
+		    //dispfe.setPower((bool)atoi(subbuff));
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("New power state: ", subbuff);
@@ -331,7 +334,7 @@
 			    }
 			    toCounter++;
 		    }
-		    dispfe.setTLayers(subbuff);
+		    //dispfe.setTLayers(subbuff);
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("Layer count: ", subbuff);

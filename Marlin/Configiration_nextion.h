@@ -54,9 +54,9 @@
     #define pHome_e_id 24
 
     //page id's
-    #define load_page 0
-    #define main_page 2 
-    #define menu_page 4 
+    #define main_page 2
+    #define printing_page 3
+    #define menu_page 4
     #define settings_page 6
     #define SD_page 5
     //#define movement_page 5
