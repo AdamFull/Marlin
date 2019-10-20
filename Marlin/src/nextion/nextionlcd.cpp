@@ -55,7 +55,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  200
+    #define LCD_UPDATE_INTERVAL  400
 
     millis_t next_lcd_update_ms;
 
@@ -254,11 +254,8 @@
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
-			if(files_count > 6 && (files_less >= 00 && files_less <= files_count))
-			{
-				files_less += atoi(subbuff);
-				dispfe.update_sd(files_list, files_less, files_count);
-			}
+			files_less += atoi(subbuff);
+			dispfe.update_sd(files_list, files_less, files_count);
 			break;
 		#if defined(PS_ON_PIN)
 	    case 'I': //Power status
