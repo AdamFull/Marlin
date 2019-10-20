@@ -66,13 +66,11 @@
 	    void resetPageChanged();
 	    bool pageChanged();
 
-        inline void setSDState(bool enabled) { pSD.setPic(enabled ? 22 : 23); }
+        inline void setSDState(bool enabled) { pSD.setPic(enabled ? 19 : 20); }
         inline void setSDFileCount(uint16_t counted) 
         {
             nof = counted;
             uint16_t max_val = counted <= num_of_lines ? 0 : counted - num_of_lines;
-            hScroll.setMaxval(max_val);
-            hScroll.setValue(max_val);
         }
         void update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count); //SD card scroll list
         uint16_t get_nof() { return nof; }
@@ -92,25 +90,25 @@
 	    bool isStarted();
 
     private:
-        NexText tExtruder1A = NexText(main_page, tExtruder1A_id, "tExtruder1A");
-	    NexText tExtruder1T = NexText(main_page, tExtruder1T_id, "tExtruder1T");
+        NexButton tExtruder1A = NexButton(main_page, 4, "bExtruder1A");
+	    NexText tExtruder1T = NexText(main_page, 17, "tExtruder1T");
         #if EXTRUDERS > 1
-            NexText tExtruder2A = NexText(main_page, tExtruder2A_id, "tExtruder2A");
-	        NexText tExtruder2T = NexText(main_page, tExtruder2T_id, "tExtruder2T");
+            NexButton tExtruder2A = NexButton(main_page, 5, "bExtruder2A");
+	        NexText tExtruder2T = NexText(main_page, 18, "tExtruder2T");
         #endif
 
-	    NexText tBedT = NexText(main_page, tBedT_id, "tBedT");
-	    NexText tBedA = NexText(main_page, tBedA_id, "tBedA");
+	    NexText tBedT = NexText(main_page, 19, "tBedT");
+	    NexButton tBedA = NexButton(main_page, 6, "tBedA");
 
-	    NexText tX = NexText(main_page, tX_id, "tX");
-	    NexText tY = NexText(main_page, tY_id, "tY");
-	    NexText tZ = NexText(main_page, tZ_id, "tZ");
+	    NexText tX = NexText(main_page, 14, "tX");
+	    NexText tY = NexText(main_page, 15, "tY");
+	    NexText tZ = NexText(main_page, 16, "tZ");
 
-        NexVariable vaIsPrinting = NexVariable(main_page, 27, "main_page.vaIsPrinting");
+        NexVariable vaIsPrinting = NexVariable(main_page, 27, "vaIsPrinting");
         
 	    NexText tMessage = NexText(printing_page, 14, "printing_page.tMessage");
 
-	    NexText tFan = NexText(main_page, 24, "tFan");
+	    NexText tFan = NexText(main_page, 20, "tFan");
 
 	    //NexText tLayers = NexText(printing_page, tLayers_id, "main_page.tLayers");
 	    NexText tETA = NexText(printing_page, 16, "printing_page.tETA");
@@ -118,17 +116,17 @@
         NexProgressBar jPrintProgress = NexProgressBar(printing_page, 1, "printing_page.jPrintProgress");
 
         NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
-        NexPicture pSD = NexPicture(main_page, 25, "main_page.pSD");
+        NexPicture pSD = NexPicture(main_page, 22, "main_page.pSD");
         NexSlider hScroll = NexSlider(SD_page, 2, "sd_page.hScroll");
         NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
                                               NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 
         char _x[7], _y[7], _z[7];
-	    char _et[4], _fan[4], _bt[4];
-	    uint8_t  _ba, _ea;
+	    char _et[4], _et1[4], _fan[4], _bt[4];
+	    uint8_t  _ba, _ea, _ea1;
 	    int  _page = 0;
 	    bool _pageChanged = false;
-	    bool _caseLight, _power = 0;
+	    //bool _caseLight, _power = 0;
 	    bool _isPrinting = false;
 	    bool _isHomed = false;
 	    bool _startup = false;

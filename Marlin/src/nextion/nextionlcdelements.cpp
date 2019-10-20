@@ -79,11 +79,28 @@
 		for(unsigned i = 1; i <= EXTRUDERS; i++)
 		{
 			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
-			if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
-			{
-				this->tExtruder1T.setText(inTemp);
-				strcpy(_et, inTemp);
-			}
+			// switch (i)
+			// {
+			// case 1:
+				if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
+				{
+					this->tExtruder1T.setText(inTemp);
+					strcpy(_et, inTemp);
+				}
+			// 	break;
+			// #if EXTRUDERS > 1
+			// case 2:
+			// 	if (strcmp(inTemp, _et1) == 0 || _pageChanged || !isStarted())
+			// 	{
+			// 		this->tExtruder2T.setText(inTemp);
+			// 		strcpy(_et1, inTemp);
+			// 	}
+			// 	break;
+			// #endif
+			
+			// default:
+			// 	break;
+			// }
 		}
 	}
 	#endif
@@ -93,11 +110,27 @@
 		for(unsigned i = 1; i <= EXTRUDERS; i++)
 		{
 			uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
-			if (_ea != average || _pageChanged || !isStarted())
-			{
-				this->tExtruder1A.setText(itoa(average, ext, 10));
-				_ea = average;
-			}
+			// switch (i)
+			// {
+			// case 0:
+				if (_ea != average || _pageChanged || !isStarted())
+				{
+					this->tExtruder1A.setText(itoa(average, ext, 10));
+					_ea = average;
+				}
+			// 	break;
+			// #if EXTRUDERS > 1
+			// case 1:
+			// 	if (_ea1 != average || _pageChanged || !isStarted())
+			// 	{
+			// 		this->tExtruder2A.setText(itoa(average, ext, 10));
+			// 		_ea1 = average;
+			// 	}
+			// 	break;
+			// #endif
+			// default:
+			// 	break;
+			// }
 		}
 	}
 
