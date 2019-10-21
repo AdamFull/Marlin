@@ -6,6 +6,8 @@
 //
 #define NEXTION_LCD
 
+#define NEX_SERIAL_PORT Serial2
+
 //=============================================================================
 //======================== Nextion / Screen Selection =========================
 //=====================  (Screen type support functions)  =====================
@@ -57,11 +59,11 @@
     #define main_page 2
     #define printing_page 3
     #define menu_page 4
-    #define settings_page 6
     #define SD_page 5
-    //#define movement_page 5
-    //#define gcode_page 6
-    #define screenSaver_page 7
+    #define settings_page 6
+    #define movement_page 9
+    #define gcode_page 10
+    #define screenSaver_page 11
 
 #endif
 

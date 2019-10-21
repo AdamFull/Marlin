@@ -29,16 +29,6 @@
 
 	#include "../Marlin.h"
 
-	/*#if USE_MARLINSERIAL
-  		// Make an exception to use HardwareSerial too
-  		#undef HardwareSerial_h
-		#include <HardwareSerial.h>
-		//#include "Arduino.h"
-		#define USB_STATUS true
-	#else
-  		#define USB_STATUS Serial2
-	#endif*/
-
     #if ENABLED(NEXTION_TIME)
         #include "TimeLib.h"
     #endif
@@ -60,6 +50,10 @@
 
     void NextionUI::init() 
     {
+		#if ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
+    		SET_INPUT_PULLUP(SD_DETECT_PIN);
+  		#endif
+		
         bool initState = nexInit();
         dispfe.setInitStatus(initState);
 		#if ENABLED(NEXTION_DEBUG)
@@ -67,7 +61,7 @@
 			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 			SERIAL_EOL();
 		#endif
-		dispfe.setMessage("Printer is ready");
+		dispfe.setMessage("PRINTER_R");
 		
         update();
         dispfe.setStarted();
@@ -83,7 +77,7 @@
         {
             char temp[10];
 
-			if(dispfe.getPage() == 2 || dispfe.getPage() == 3)
+			if(dispfe.getPage() == main_page || dispfe.getPage() == printing_page)
 			{
 		    	dispfe.setExtruderActual(); //Set current extruder temperature
 		    	dispfe.setExtruderTarget(); //Set extruder target temperature
@@ -94,27 +88,20 @@
 				#endif
 
 				#if FAN_COUNT > 0
+					dispfe.setHasFan(true);
 		    		dispfe.setFan(temp);
 				#endif
 			}
 
-			if(dispfe.getPage() == 9)
+			if(dispfe.getPage() == movement_page)
 			{
 				dispfe.setXPos();
 		    	dispfe.setYPos();
 		    	dispfe.setZPos();
 			}
 
-			//#if defined(PS_ON_PIN)
-		    //	dispfe.setPower(digitalRead(PS_ON_PIN));
-			//#endif
-
-            //#if ENABLED(CASE_LIGHT_ENABLE)
-		    //    dispfe.setCaseLight(digitalRead(CASE_LIGHT_PIN));
-            //#endif
-
             #if ENABLED(ADVANCED_OK) //or HAS_ABL
-		        dispfe.setIsPrinting(planner.movesplanned());
+		        dispfe.setIsPrinting(isPrinting());
             #endif
 
 		    //dispfe.setIsHomed(all_axes_homed());
@@ -128,7 +115,7 @@
 
 			update_sd();
 
-			if(sd_readed && dispfe.getPage() == 5)
+			if(sd_readed && dispfe.getPage() == SD_page)
 			{
 				if(!sd_need_update)
 					dispfe.update_sd(files_list, files_less, files_count);
@@ -150,41 +137,60 @@
         }
     }
 
+	void NextionUI::read_sd()
+	{
+		if(!sd_readed)
+		{
+			files_count = card.get_num_Files();
+			dispfe.setSDFileCount(files_count);
+			for(uint16_t i = 0; i<files_count; i++)
+			{
+				card.getfilename(i);
+				strcpy(files_list[i], card.filename);
+			}
+			sd_readed = true;	
+		}
+	}
+
 	void NextionUI::update_sd()
 	{
-		millis_t ms = millis();
 		#if ENABLED(SDSUPPORT)
-			if (ELAPSED(ms, sd_update_ms))
-			{
-				//if(dispfe.getPage() != 2 && dispfe.getPage() != 5) card.release();
-				if(dispfe.getPage() == 2) card.initsd();
-				sd_update_ms = ms + LCD_UPDATE_INTERVAL;
-			}
 			dispfe.setSDState(card.flag.detected);
-
-				if(card.isDetected())
+			if (!IS_SD_INSERTED())
+			{
+				if(!card.isDetected())
 				{
-					if(!sd_readed)
-					{
-						dispfe.setMessage("SD plugged in.");
-						files_count = card.get_num_Files();
-						dispfe.setSDFileCount(files_count);
-						for(uint16_t i = 0; i<files_count; i++)
-						{
-							card.getfilename(i);
-							strcpy(files_list[i], card.filename);
-						}
-						sd_readed = true;	
-					}
+					dispfe.setMessage("SD Inserted");
+					card.initsd();
+					read_sd();
 				}
-				else
-				{
-					sd_readed = false;
-					files_count = 0;
-					memset(files_list[0], 0, 27*64);
-				}
+			}
+			else
+			{
+        		sd_readed = false;
+				files_count = 0;
+				memset(files_list[0], 0, 27*64);
+        		card.release();
+				dispfe.setMessage("SD Removed");
+      		}
 		#endif
 	}
+
+	#if HAS_PRINT_PROGRESS
+    	uint8_t NextionUI::get_progress() {
+      	#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+        	uint8_t &progress = progress_bar_percent;
+        	#define _PLIMIT(P) ((P) & 0x7F)
+      	#else
+        	#define _PLIMIT(P) P
+        	uint8_t progress = 0;
+      	#endif
+      	#if ENABLED(SDSUPPORT)
+        	if (IS_SD_PRINTING()) progress = card.percentDone();
+      	#endif
+      	return _PLIMIT(progress);
+    }
+ 	#endif
 
     bool NextionUI::has_status() { return (lcd_status_message[0] != '\0'); }
     void NextionUI::set_alert_status_P(PGM_P message) { processMessage(message); }
@@ -198,38 +204,6 @@
 	    char subbuff[32] = { 0 };
 
 	    switch (receivedString[0]) {
-		#if EXTRUDERS > 0
-	    case 'E':
-		    strLength = receivedByte - 3;
-		    memcpy(subbuff, &receivedString[3], strLength);
-		    subbuff[strLength + 1] = '\0';
-
-			printercontrol::setHotendTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
-			dispfe.setMessage(dispfe.XPortMsg("Hew hotend target: ", subbuff));
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("New hotend target: ", subbuff);
-				SERIAL_EOL();
-				SERIAL_ECHOLNPAIR("Hotend id: ", ((int)receivedString[1]) - 1);
-				SERIAL_EOL();
-			#endif
-		    break;
-		#endif //END HAS_EXTRUDER
-		#if HAS_HEATED_BED
-	    case 'A':
-		    strLength = receivedByte - 2;
-		    memcpy(subbuff, &receivedString[2], strLength);
-		    subbuff[strLength + 1] = '\0';
-			
-			printercontrol::setBedTemperature(atoi(subbuff));
-			dispfe.setMessage(dispfe.XPortMsg("New bed target: ", subbuff));
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("New bed target: ", subbuff);
-				SERIAL_EOL();
-			#endif
-		    break;
-		#endif //END HAS_HEATED_BED
 		#if FAN_COUNT > 0
 	    case 'F':
 		    strLength = receivedByte - 2;
@@ -237,7 +211,6 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setFanSpeed(subbuff); //(ceil(atoi(subbuff) * 2.54));
-			dispfe.setMessage(dispfe.XPortMsg("New fan speed: ", subbuff));
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("New fan speed: ", subbuff);
@@ -249,7 +222,6 @@
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
-			dispfe.setMessage(dispfe.XPortMsg("G-Code: ", subbuff));
 		    queue.enqueue_one_now(subbuff);
 		    break;
 	    case 'P':
@@ -270,34 +242,34 @@
 			files_less += atoi(subbuff);
 			dispfe.update_sd(files_list, files_less, files_count);
 			break;
-		#if defined(PS_ON_PIN)
-	    case 'I': //Power status
-		    strLength = receivedByte - 2;
-		    memcpy(subbuff, &receivedString[2], strLength);
-		    subbuff[receivedByte - strLength] = '\0';
+		//#if defined(PS_ON_PIN)
+	    // case 'I': //Power status
+		//     strLength = receivedByte - 2;
+		//     memcpy(subbuff, &receivedString[2], strLength);
+		//     subbuff[receivedByte - strLength] = '\0';
 
-		    //dispfe.setPower((bool)atoi(subbuff));
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("New power state: ", subbuff);
-				SERIAL_EOL();
-			#endif
-		    break;
-		#endif //END PS_ON_PIN
-		#if ENABLED(CASE_LIGHT_ENABLE)
-	    case 'C': //Case Light
-		    strLength = receivedByte - 2;
-		    memcpy(subbuff, &receivedString[2], strLength);
-		    subbuff[receivedByte - strLength] = '\0';
+		//     //dispfe.setPower((bool)atoi(subbuff));
+		// 	#if ENABLED(NEXTION_DEBUG)
+		// 		SERIAL_ECHO_START();
+		// 		SERIAL_ECHOLNPAIR("New power state: ", subbuff);
+		// 		SERIAL_EOL();
+		// 	#endif
+		//     break;
+		// #endif //END PS_ON_PIN
+		// #if ENABLED(CASE_LIGHT_ENABLE)
+	    // case 'C': //Case Light
+		//     strLength = receivedByte - 2;
+		//     memcpy(subbuff, &receivedString[2], strLength);
+		//     subbuff[receivedByte - strLength] = '\0';
 
-		    dispfe.setCaseLight((bool)atoi(subbuff));
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
-				SERIAL_EOL();
-			#endif
-		    break;
-		#endif //END CASE_LIGHT_PIN
+		//     dispfe.setCaseLight((bool)atoi(subbuff));
+		// 	#if ENABLED(NEXTION_DEBUG)
+		// 		SERIAL_ECHO_START();
+		// 		SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
+		// 		SERIAL_EOL();
+		// 	#endif
+		//     break;
+		// #endif //END CASE_LIGHT_PIN
 	    }
     }
 
@@ -308,7 +280,6 @@
 
 	    memcpy(subbuff, &inputString[2], strLength);
 	    subbuff[strLength] = 0;
-
 	    dispfe.setPage(atoi(subbuff));
 
 		#if ENABLED(NEXTION_DEBUG)
@@ -337,7 +308,6 @@
 		    {
 			    if (message[toCounter] == ' ')
 			    {
-				    toCounter;
 				    memcpy(subbuff, &message[startPos], toCounter - startPos);
 				    subbuff[toCounter - startPos] = '\0';
 				    break;
@@ -351,16 +321,6 @@
 				SERIAL_EOL();
 			#endif
 		    return;
-	    }
-        else if (message[0] == 'E' && message[1] == 'T' && message[2] == 'L')
-	    {
-		    strlcpy(subbuff, &message[4], 11);
-		    dispfe.setTETA(subbuff);
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("Current TETA time: ", subbuff);
-				SERIAL_EOL();
-			#endif
 	    }
         #if ENABLED(NEXTION_TIME)
         else if (message[0] == 'T' && message[1] == 'M' && message[2] == '=')
@@ -452,5 +412,9 @@
 		    }
         }
     }
+
+	bool NextionUI::isPrintingFromMedia() { return IFSD(card.isFileOpen(), false); }
+    bool NextionUI::isPrinting() { return (planner.movesplanned() || isPrintingFromMedia() || IFSD(IS_SD_PRINTING(), false)); }
+    bool NextionUI::isMoving() { return planner.has_blocks_queued(); }
 
 #endif

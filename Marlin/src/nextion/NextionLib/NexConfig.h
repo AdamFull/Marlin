@@ -15,6 +15,8 @@
 #ifndef __NEXCONFIG_H__
 #define __NEXCONFIG_H__
 
+#include "../../../Configiration_nextion.h"
+
 /**
  * @addtogroup Configuration 
  * @{ 
@@ -34,7 +36,7 @@
 /**
  * Define nexSerial for communicate with Nextion touch panel. 
  */
-#define nexSerial Serial2
+#define nexSerial NEX_SERIAL_PORT
 
 #ifdef DEBUG_SERIAL_ENABLE
 #define dbSerialPrint(a)    dbSerial.print(a)

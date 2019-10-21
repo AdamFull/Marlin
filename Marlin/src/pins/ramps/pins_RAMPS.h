@@ -686,5 +686,6 @@
 
     #endif
   #endif // NEWPANEL
-
+#else //For other...
+  #define SD_DETECT_PIN 49
 #endif // HAS_SPI_LCD

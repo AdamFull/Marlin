@@ -81,6 +81,8 @@
             return buffer;
         }
 
+        inline void setHasFan(bool state) { vaHasFan.setValue(state); }
+
         void setIsPrinting(bool status);
         void setProgress(uint8_t perc);
 	    //void setIsHomed(bool status);
@@ -108,7 +110,8 @@
 
         NexVariable vaIsPrinting = NexVariable(main_page, 27, "vaIsPrinting");
         
-	    NexText tMessage = NexText(main_page, 27, "main_page.tMessage");
+        NexVariable vaLastMessage = NexVariable(main_page, 27, "vaLastMessage");
+        NexVariable vaHasFan = NexVariable(main_page, 29, "vaHasFan");
 
 	    NexText tFan = NexText(main_page, 20, "tFan");
 

@@ -79,58 +79,57 @@
 		for(unsigned i = 1; i <= EXTRUDERS; i++)
 		{
 			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
-			// switch (i)
-			// {
-			// case 1:
+			switch (i)
+			{
+			case 1:
 				if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
 				{
 					this->tExtruder1T.setText(inTemp);
 					strcpy(_et, inTemp);
 				}
-			// 	break;
-			// #if EXTRUDERS > 1
-			// case 2:
-			// 	if (strcmp(inTemp, _et1) == 0 || _pageChanged || !isStarted())
-			// 	{
-			// 		this->tExtruder2T.setText(inTemp);
-			// 		strcpy(_et1, inTemp);
-			// 	}
-			// 	break;
-			// #endif
-			
-			// default:
-			// 	break;
-			// }
+			 	break;
+			#if EXTRUDERS == 2
+				case 2:
+					if (strcmp(inTemp, _et1) == 0 || _pageChanged || !isStarted())
+					{
+						this->tExtruder2T.setText(inTemp);
+						strcpy(_et1, inTemp);
+					}
+					break;
+			#endif
+			}
 		}
 	}
 	#endif
 
 	void nextionlcdelements::setExtruderActual()
 	{
-		for(unsigned i = 1; i <= EXTRUDERS; i++)
+		uint16_t average;
+		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
-			uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
-			// switch (i)
-			// {
-			// case 0:
+			switch (i)
+			{
+			case 0:
+				average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 				if (_ea != average || _pageChanged || !isStarted())
 				{
-					this->tExtruder1A.setText(itoa(average, ext, 10));
+					sprintf(ext,"%d",average);
+					this->tExtruder1A.setText(ext);
 					_ea = average;
 				}
-			// 	break;
-			// #if EXTRUDERS > 1
-			// case 1:
-			// 	if (_ea1 != average || _pageChanged || !isStarted())
-			// 	{
-			// 		this->tExtruder2A.setText(itoa(average, ext, 10));
-			// 		_ea1 = average;
-			// 	}
-			// 	break;
-			// #endif
-			// default:
-			// 	break;
-			// }
+			 	break;
+			#if EXTRUDERS > 1
+			case 1:
+				average = (uint8_t)((_ea1 + (uint8_t)printercontrol::getDegHotend(i)) / 2);
+				if (_ea1 != average || _pageChanged || !isStarted())
+			 	{
+					sprintf(ext,"%d",average);
+			 		this->tExtruder2A.setText(ext);
+			 		_ea1 = average;
+			 	}
+			 	break;
+			#endif
+			}
 		}
 	}
 
@@ -244,7 +243,7 @@
 
 	void nextionlcdelements::setMessage(const char * inStr)
 	{
-		this->tMessage.setText(inStr);
+		this->vaLastMessage.setText(inStr);
 	}
 
 	// void nextionlcdelements::setTLayers(const char * inStr)

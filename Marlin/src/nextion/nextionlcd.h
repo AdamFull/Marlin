@@ -13,6 +13,9 @@
 
     #if ENABLED(SDSUPPORT)
       #include "../sd/cardreader.h"
+      #define IFSD(A,B) (A)
+    #else
+        #define IFSD(A,B) (B)
     #endif
 
     enum LCDViewAction : uint8_t {
@@ -46,6 +49,7 @@ public:
     static uint8_t alert_level; // Higher levels block lower levels
     static inline void reset_alert_level() { alert_level = 0; }
     static void update_sd();
+    static void read_sd();
 
     static void update_buttons() {} //check
 
@@ -64,6 +68,14 @@ private:
     static void ProcessPage(char * inputString, uint8_t receivedBytes);
     static void processMessage(const char * message);
     static void SerialEvent();
+
+    static bool isPrintingFromMedia();
+    static bool isPrinting();
+    static bool isMoving();
+
+    #if HAS_PRINT_PROGRESS
+        static uint8_t get_progress();
+    #endif
 
 };
 
