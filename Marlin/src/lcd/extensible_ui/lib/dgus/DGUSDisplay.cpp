@@ -26,7 +26,7 @@
 
 #if ENABLED(DGUS_LCD)
 
-#include "DGUSDisplay.h"
+#include "DGUSlcd/ultralcd.h"
 #include "DGUSVPVariable.h"
 #include "DGUSDisplayDefinition.h"
 

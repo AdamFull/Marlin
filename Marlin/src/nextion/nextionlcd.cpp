@@ -8,9 +8,6 @@
     uint16_t files_less;
 	bool sd_readed;
 	bool sd_need_update;
-	#if ENABLED(INIT_SDCARD_ON_BOOT)
-        uint8_t lcd_sd_status;
-    #endif
 
 	bool readed = false;
 
@@ -22,6 +19,7 @@
 	#endif
 
     #include "nextionlcd.h"
+	NextionUI ui;
     #include "nextionlcdelements.h"
 	#include "printercontrol.h"
 	
@@ -58,16 +56,10 @@
     #define LCD_UPDATE_INTERVAL  400
 
     millis_t next_lcd_update_ms;
+	millis_t sd_update_ms;
 
     void NextionUI::init() 
     {
-		#if ENABLED(SDSUPPORT)
-			#if ENABLED(INIT_SDCARD_ON_BOOT)
-      			lcd_sd_status = 2; // UNKNOWN
-				card.initsd();
-    		#endif
-		#endif
-
         bool initState = nexInit();
         dispfe.setInitStatus(initState);
 		#if ENABLED(NEXTION_DEBUG)
@@ -75,6 +67,7 @@
 			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 			SERIAL_EOL();
 		#endif
+		dispfe.setMessage("Printer is ready");
 		
         update();
         dispfe.setStarted();
@@ -90,29 +83,35 @@
         {
             char temp[10];
 
-		    dispfe.setExtruderActual(); //Set current extruder temperature
-		    dispfe.setExtruderTarget(); //Set extruder target temperature
+			if(dispfe.getPage() == 2 || dispfe.getPage() == 3)
+			{
+		    	dispfe.setExtruderActual(); //Set current extruder temperature
+		    	dispfe.setExtruderTarget(); //Set extruder target temperature
 
-			#if HAS_HEATED_BED
-		    	dispfe.setBedActual();
-		    	dispfe.setBedTarget(temp);
-			#endif
+				#if HAS_HEATED_BED
+		    		dispfe.setBedActual();
+		    		dispfe.setBedTarget(temp);
+				#endif
 
-		    dispfe.setXPos();
-		    dispfe.setYPos();
-		    dispfe.setZPos();
+				#if FAN_COUNT > 0
+		    		dispfe.setFan(temp);
+				#endif
+			}
 
-			#if FAN_COUNT > 0
-		    	dispfe.setFan(temp);
-			#endif
+			if(dispfe.getPage() == 9)
+			{
+				dispfe.setXPos();
+		    	dispfe.setYPos();
+		    	dispfe.setZPos();
+			}
 
-			#if defined(PS_ON_PIN)
-		    	//dispfe.setPower(digitalRead(PS_ON_PIN));
-			#endif
+			//#if defined(PS_ON_PIN)
+		    //	dispfe.setPower(digitalRead(PS_ON_PIN));
+			//#endif
 
-            #if ENABLED(CASE_LIGHT_ENABLE)
-		        dispfe.setCaseLight(digitalRead(CASE_LIGHT_PIN));
-            #endif
+            //#if ENABLED(CASE_LIGHT_ENABLE)
+		    //    dispfe.setCaseLight(digitalRead(CASE_LIGHT_PIN));
+            //#endif
 
             #if ENABLED(ADVANCED_OK) //or HAS_ABL
 		        dispfe.setIsPrinting(planner.movesplanned());
@@ -127,32 +126,7 @@
 		        dispfe.setTime();
             #endif
 
-			#if ENABLED(SDSUPPORT)
-				card.initsd();
-				dispfe.setSDState(card.flag.detected);
-				if(card.isDetected())
-				{
-					if(!sd_readed)
-					{
-						files_count = card.get_num_Files();
-						dispfe.setSDFileCount(files_count);
-						for(uint16_t i = 0; i<files_count; i++)
-						{
-							card.getfilename(i);
-							strcpy(files_list[i], card.longest_filename());
-						}
-						sd_readed = true;	
-					}
-				}
-				else
-				{
-					sd_readed = false;
-					files_count = 0;
-					memset(files_list[0], 0, 27*64);
-        			card.release();
-				}
-				
-			#endif
+			update_sd();
 
 			if(sd_readed && dispfe.getPage() == 5)
 			{
@@ -176,6 +150,42 @@
         }
     }
 
+	void NextionUI::update_sd()
+	{
+		millis_t ms = millis();
+		#if ENABLED(SDSUPPORT)
+			if (ELAPSED(ms, sd_update_ms))
+			{
+				//if(dispfe.getPage() != 2 && dispfe.getPage() != 5) card.release();
+				if(dispfe.getPage() == 2) card.initsd();
+				sd_update_ms = ms + LCD_UPDATE_INTERVAL;
+			}
+			dispfe.setSDState(card.flag.detected);
+
+				if(card.isDetected())
+				{
+					if(!sd_readed)
+					{
+						dispfe.setMessage("SD plugged in.");
+						files_count = card.get_num_Files();
+						dispfe.setSDFileCount(files_count);
+						for(uint16_t i = 0; i<files_count; i++)
+						{
+							card.getfilename(i);
+							strcpy(files_list[i], card.filename);
+						}
+						sd_readed = true;	
+					}
+				}
+				else
+				{
+					sd_readed = false;
+					files_count = 0;
+					memset(files_list[0], 0, 27*64);
+				}
+		#endif
+	}
+
     bool NextionUI::has_status() { return (lcd_status_message[0] != '\0'); }
     void NextionUI::set_alert_status_P(PGM_P message) { processMessage(message); }
     void NextionUI::set_status_P(const char* message, const int8_t level) { processMessage(message);}
@@ -195,6 +205,7 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setHotendTemperature(atoi(subbuff), ((int)receivedString[1]) - 1);
+			dispfe.setMessage(dispfe.XPortMsg("Hew hotend target: ", subbuff));
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("New hotend target: ", subbuff);
@@ -211,6 +222,7 @@
 		    subbuff[strLength + 1] = '\0';
 			
 			printercontrol::setBedTemperature(atoi(subbuff));
+			dispfe.setMessage(dispfe.XPortMsg("New bed target: ", subbuff));
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("New bed target: ", subbuff);
@@ -225,6 +237,7 @@
 		    subbuff[strLength + 1] = '\0';
 
 			printercontrol::setFanSpeed(subbuff); //(ceil(atoi(subbuff) * 2.54));
+			dispfe.setMessage(dispfe.XPortMsg("New fan speed: ", subbuff));
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("New fan speed: ", subbuff);
@@ -236,7 +249,7 @@
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
-
+			dispfe.setMessage(dispfe.XPortMsg("G-Code: ", subbuff));
 		    queue.enqueue_one_now(subbuff);
 		    break;
 	    case 'P':

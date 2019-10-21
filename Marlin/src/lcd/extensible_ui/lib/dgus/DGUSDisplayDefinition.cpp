@@ -27,7 +27,7 @@
 #if ENABLED(DGUS_LCD)
 
 #include "DGUSDisplayDefinition.h"
-#include "DGUSDisplay.h"
+#include "DGUSlcd/ultralcd.h"
 
 #include "../../../../module/temperature.h"
 #include "../../../../module/motion.h"

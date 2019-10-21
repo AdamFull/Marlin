@@ -89,6 +89,8 @@
         void setStarted();
 	    bool isStarted();
 
+        char* XPortMsg(char* mHeader, char* inmsg);
+
     private:
         NexButton tExtruder1A = NexButton(main_page, 4, "bExtruder1A");
 	    NexText tExtruder1T = NexText(main_page, 17, "tExtruder1T");
@@ -100,13 +102,13 @@
 	    NexText tBedT = NexText(main_page, 19, "tBedT");
 	    NexButton tBedA = NexButton(main_page, 6, "tBedA");
 
-	    NexText tX = NexText(main_page, 14, "tX");
-	    NexText tY = NexText(main_page, 15, "tY");
-	    NexText tZ = NexText(main_page, 16, "tZ");
+	    NexText tX = NexText(9, 22, "move_page.tX");
+	    NexText tY = NexText(9, 23, "move_page.tY");
+	    NexText tZ = NexText(9, 24, "move_page.tZ");
 
         NexVariable vaIsPrinting = NexVariable(main_page, 27, "vaIsPrinting");
         
-	    NexText tMessage = NexText(printing_page, 14, "printing_page.tMessage");
+	    NexText tMessage = NexText(main_page, 27, "main_page.tMessage");
 
 	    NexText tFan = NexText(main_page, 20, "tFan");
 

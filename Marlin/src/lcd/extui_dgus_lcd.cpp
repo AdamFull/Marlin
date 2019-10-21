@@ -31,7 +31,7 @@
 #if ENABLED(DGUS_LCD)
 
 #include "extensible_ui/ui_api.h"
-#include "extensible_ui/lib/dgus/DGUSDisplay.h"
+#include "extensible_ui/lib/dgus/DGUSlcd/ultralcd.h"
 #include "extensible_ui/lib/dgus/DGUSDisplayDefinition.h"
 
 namespace ExtUI {

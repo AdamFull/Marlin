@@ -262,6 +262,21 @@
 		this->tPercentage.setText(inStr);
 	}
 
+	char* nextionlcdelements::XPortMsg(char* mHeader, char* inmsg)
+	{
+		// retrieve incoming string and assign to variable
+		char* msgHeader = new char[strlen(inmsg)+1];
+		memcpy(msgHeader,inmsg,strlen(inmsg)+1);
+		
+		char* retVal = new char[strlen(mHeader)+strlen(msgHeader)+1];
+		
+		// Assemble the string
+		strcat(retVal,mHeader);
+		strcat(retVal,msgHeader);
+
+		return retVal;
+	}
+
 	#if ENABLED(NEXTION_TIME)
 
 	//void PrinterClass::setTime(int year, int month, int day, int hour, int minute)
