@@ -85,8 +85,8 @@
 
         void setIsPrinting(bool status);
         void setProgress(uint8_t perc);
-	    //void setIsHomed(bool status);
-	    //bool getIsHomed();
+	    void setIsHomed(bool status);
+	    bool getIsHomed();
 
         void setStarted();
 	    bool isStarted();
@@ -94,35 +94,36 @@
         char* XPortMsg(char* mHeader, char* inmsg);
 
     private:
-        NexButton tExtruder1A = NexButton(main_page, 4, "bExtruder1A");
-	    NexText tExtruder1T = NexText(main_page, 17, "tExtruder1T");
+        NexVariable vaExtruder1A = NexVariable(main_page, 14, "vaExtruder1A");
+	    NexVariable vaExtruder1T = NexVariable(main_page, 18, "vaExtruder1T");
         #if EXTRUDERS > 1
-            NexButton tExtruder2A = NexButton(main_page, 5, "bExtruder2A");
-	        NexText tExtruder2T = NexText(main_page, 18, "tExtruder2T");
+            NexVariable vaExtruder2A = NexVariable(main_page, 15, "vaExtruder2A");
+	        NexVariable vaExtruder2T = NexVariable(main_page, 19, "vaExtruder2T");
         #endif
 
-	    NexText tBedT = NexText(main_page, 19, "tBedT");
-	    NexButton tBedA = NexButton(main_page, 6, "tBedA");
+        NexVariable vaBedA = NexVariable(main_page, 16, "vaBedA");
+	    NexVariable vaBedT = NexVariable(main_page, 20, "vaBedT");
 
-	    NexText tX = NexText(9, 22, "move_page.tX");
-	    NexText tY = NexText(9, 23, "move_page.tY");
-	    NexText tZ = NexText(9, 24, "move_page.tZ");
-
+        NexVariable vaFan = NexVariable(main_page, 20, "vaFan");
         NexVariable vaIsPrinting = NexVariable(main_page, 27, "vaIsPrinting");
-        
         NexVariable vaLastMessage = NexVariable(main_page, 27, "vaLastMessage");
         NexVariable vaHasFan = NexVariable(main_page, 29, "vaHasFan");
 
-	    NexText tFan = NexText(main_page, 20, "tFan");
+        NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
+        NexPicture pSD = NexPicture(main_page, 22, "main_page.pSD");
+        NexPicture pHome = NexPicture(main_page, 28, "main_page.pHome");
+
+	    NexVariable vaX = NexVariable(movement_page, 26, "move_page.vaX");
+	    NexVariable vaY = NexVariable(movement_page, 27, "move_page.vaY");
+	    NexVariable vaZ = NexVariable(movement_page, 28, "move_page.vaZ");
 
 	    //NexText tLayers = NexText(printing_page, tLayers_id, "main_page.tLayers");
 	    NexText tETA = NexText(printing_page, 16, "printing_page.tETA");
 	    NexText tPercentage = NexText(printing_page, 15, "printing_page.tPercentage");
         NexProgressBar jPrintProgress = NexProgressBar(printing_page, 1, "printing_page.jPrintProgress");
 
-        NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
-        NexPicture pSD = NexPicture(main_page, 22, "main_page.pSD");
-        NexSlider hScroll = NexSlider(SD_page, 2, "sd_page.hScroll");
+        NexVariable vaLastPos = NexVariable(SD_page, 11, "sd_page.vaLastPos");
+        NexVariable vaMax = NexVariable(SD_page, 14, "sd_page.vaMax");
         NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
                                               NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 

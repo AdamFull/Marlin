@@ -104,7 +104,7 @@
 		        dispfe.setIsPrinting(isPrinting());
             #endif
 
-		    //dispfe.setIsHomed(all_axes_homed());
+		    dispfe.setIsHomed(all_axes_homed());
 
 		    dispfe.resetPageChanged();
 
@@ -242,34 +242,34 @@
 			files_less += atoi(subbuff);
 			dispfe.update_sd(files_list, files_less, files_count);
 			break;
-		//#if defined(PS_ON_PIN)
-	    // case 'I': //Power status
-		//     strLength = receivedByte - 2;
-		//     memcpy(subbuff, &receivedString[2], strLength);
-		//     subbuff[receivedByte - strLength] = '\0';
+		#if defined(PS_ON_PIN)
+	     	case 'I': //Power status
+		     	strLength = receivedByte - 2;
+		     	memcpy(subbuff, &receivedString[2], strLength);
+		     	subbuff[receivedByte - strLength] = '\0';
 
-		//     //dispfe.setPower((bool)atoi(subbuff));
-		// 	#if ENABLED(NEXTION_DEBUG)
-		// 		SERIAL_ECHO_START();
-		// 		SERIAL_ECHOLNPAIR("New power state: ", subbuff);
-		// 		SERIAL_EOL();
-		// 	#endif
-		//     break;
-		// #endif //END PS_ON_PIN
-		// #if ENABLED(CASE_LIGHT_ENABLE)
-	    // case 'C': //Case Light
-		//     strLength = receivedByte - 2;
-		//     memcpy(subbuff, &receivedString[2], strLength);
-		//     subbuff[receivedByte - strLength] = '\0';
+		    	//dispfe.setPower((bool)atoi(subbuff));
+		 		#if ENABLED(NEXTION_DEBUG)
+		 			SERIAL_ECHO_START();
+		 			SERIAL_ECHOLNPAIR("New power state: ", subbuff);
+		 			SERIAL_EOL();
+		 		#endif
+		     	break;
+		#endif //END PS_ON_PIN
+		#if ENABLED(CASE_LIGHT_ENABLE)
+	     	case 'C': //Case Light
+		    	strLength = receivedByte - 2;
+		     	memcpy(subbuff, &receivedString[2], strLength);
+		     	subbuff[receivedByte - strLength] = '\0';
 
-		//     dispfe.setCaseLight((bool)atoi(subbuff));
-		// 	#if ENABLED(NEXTION_DEBUG)
-		// 		SERIAL_ECHO_START();
-		// 		SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
-		// 		SERIAL_EOL();
-		// 	#endif
-		//     break;
-		// #endif //END CASE_LIGHT_PIN
+		     	//dispfe.setCaseLight((bool)atoi(subbuff));
+				#if ENABLED(NEXTION_DEBUG)
+					SERIAL_ECHO_START();
+					SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
+					SERIAL_EOL();
+				#endif
+		    	break;
+			#endif //END CASE_LIGHT_PIN
 	    }
     }
 

@@ -8,6 +8,8 @@
 	#if ENABLED(SDSUPPORT)
 		void nextionlcdelements::update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count)
 		{
+			vaLastPos.setValue(files_less);
+			vaMax.setValue(files_count-num_of_lines);
 			for(unsigned i = 0; i < num_of_lines; i++)
 			{
 				if(files_count<=num_of_lines)
@@ -27,7 +29,7 @@
 		char* xPos = ftostr52sp(printercontrol::getCurrentPosition(X_AXIS));
 		if (strcmp(xPos, _x)!=0 || _pageChanged || !isStarted())
 		{
-			this->tX.setText(xPos);
+			this->vaX.setValue(printercontrol::getCurrentPosition(X_AXIS));
 			strcpy(_x, xPos);
 		}
 	}
@@ -37,7 +39,7 @@
 		char* yPos = ftostr52sp(printercontrol::getCurrentPosition(Y_AXIS));
 		if (strcmp(yPos, _y) != 0 || _pageChanged || !isStarted())
 		{
-			this->tY.setText(yPos);
+			this->vaY.setValue(printercontrol::getCurrentPosition(Y_AXIS));
 			strcpy(_y, yPos);
 		}
 	}
@@ -47,7 +49,7 @@
 		char* zPos = ftostr52sp(printercontrol::getCurrentPosition(Z_AXIS));
 		if (strcmp(zPos, _z) != 0 || _pageChanged || !isStarted())
 		{
-			this->tZ.setText(zPos);
+			this->vaZ.setValue(printercontrol::getCurrentPosition(Z_AXIS));
 			strcpy(_z, zPos);
 		}
 	}
@@ -58,7 +60,7 @@
 		char* inTemp = itoa(printercontrol::getDegTargetBed(), temp, 10);
 		if (strcmp(inTemp, _bt) != 0 || _pageChanged || !isStarted())
 		{
-			this->tBedT.setText(inTemp);
+			this->vaBedT.setValue(printercontrol::getDegTargetBed());
 			strcpy(_bt, inTemp);
 		}
 	}
@@ -68,7 +70,7 @@
 		uint16_t average = (uint8_t)((_ba + (uint8_t)printercontrol::getDegBed()) / 2);
 		if (_ba != average || _pageChanged || !isStarted())
 		{
-			this->tBedA.setText(itoa(average, ext, 10));
+			this->vaBedA.setValue(average);
 			_ba = average;
 		}
 	}
@@ -76,23 +78,23 @@
 	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setExtruderTarget()
 	{
-		for(unsigned i = 1; i <= EXTRUDERS; i++)
+		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
 			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
 			switch (i)
 			{
-			case 1:
+			case 0 :
 				if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
 				{
-					this->tExtruder1T.setText(inTemp);
+					this->vaExtruder1T.setValue(printercontrol::getDegTargetHotend(i));
 					strcpy(_et, inTemp);
 				}
 			 	break;
 			#if EXTRUDERS == 2
-				case 2:
+				case 1:
 					if (strcmp(inTemp, _et1) == 0 || _pageChanged || !isStarted())
 					{
-						this->tExtruder2T.setText(inTemp);
+						this->vaExtruder2T.setValue(printercontrol::getDegTargetHotend(i));
 						strcpy(_et1, inTemp);
 					}
 					break;
@@ -113,8 +115,7 @@
 				average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 				if (_ea != average || _pageChanged || !isStarted())
 				{
-					sprintf(ext,"%d",average);
-					this->tExtruder1A.setText(ext);
+					this->vaExtruder1A.setValue(average);
 					_ea = average;
 				}
 			 	break;
@@ -123,8 +124,7 @@
 				average = (uint8_t)((_ea1 + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 				if (_ea1 != average || _pageChanged || !isStarted())
 			 	{
-					sprintf(ext,"%d",average);
-			 		this->tExtruder2A.setText(ext);
+			 		this->vaExtruder2A.setValue(average);
 			 		_ea1 = average;
 			 	}
 			 	break;
@@ -140,7 +140,7 @@
 			char* inSpeed = itoa(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100), temp, 10);
 			if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())
 			{
-				this->tFan.setText(inSpeed);
+				this->vaFan.setValue(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100));
 				strcpy(_fan, inSpeed);
 			}
 		}
@@ -216,19 +216,19 @@
 		}
 	}
 
-	// void nextionlcdelements::setIsHomed(bool status)
-	// {
-	// 	if (_isHomed != status || _pageChanged || !isStarted())
-	// 	{
-	// 		_isHomed = status;
-    //     	status == 1 ? this->pHome.setPic(pHome_e_id) : this->pHome.setPic(pEmpty_id);
-	// 	}
-	// }
+	void nextionlcdelements::setIsHomed(bool status)
+	{
+		if (_isHomed != status || _pageChanged || !isStarted())
+	 	{
+	 		_isHomed = status;
+         	status == 1 ? this->pHome.setPic(53) : this->pHome.setPic(20);
+	 	}
+	}
 
-	// bool nextionlcdelements::getIsHomed()
-	// {
-	// 	return _isHomed;
-	// }
+	bool nextionlcdelements::getIsHomed()
+	{
+	 	return _isHomed;
+	}
 
 	void nextionlcdelements::setStarted()
 	{
