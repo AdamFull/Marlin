@@ -67,19 +67,7 @@
 	    bool pageChanged();
 
         inline void setSDState(bool enabled) { pSD.setPic(enabled ? 19 : 20); }
-        inline void setSDFileCount(uint16_t counted) 
-        {
-            nof = counted;
-            uint16_t max_val = counted <= num_of_lines ? 0 : counted - num_of_lines;
-        }
         void update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count); //SD card scroll list
-        uint16_t get_nof() { return nof; }
-        const char* get_sd_text(int pos) 
-        {
-            char* buffer;
-            list_lines[pos].getText(buffer, 27);
-            return buffer;
-        }
 
         inline void setHasFan(bool state) { vaHasFan.setValue(state); }
 
@@ -91,7 +79,7 @@
         void setStarted();
 	    bool isStarted();
 
-        void set_allert_screen(PGM_P message);
+        void set_allert_screen(const char* message);
 
         char* XPortMsg(char* mHeader, char* inmsg);
 
@@ -110,6 +98,8 @@
         NexVariable vaIsPrinting = NexVariable(main_page, 12, "vaIsPrinting");
         NexVariable vaLastMessage = NexVariable(main_page, 24, "vaLastMessage");
         NexVariable vaHasFan = NexVariable(main_page, 25, "vaHasFan");
+
+        NexVariable vaKillMessage = NexVariable(10, 3, "error_page.vaKillMessage");
 
         NexVariable vaAlert = NexVariable(main_page, 29, "vaAlert");
 
@@ -131,8 +121,8 @@
         NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
                                               NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 
-        char _x[7], _y[7], _z[7];
-	    char _et[4], _et1[4], _fan[4], _bt[4];
+        float _x, _y, _z;
+	    int16_t _et, _et1, _fan, _bt;
 	    uint8_t  _ba, _ea, _ea1;
 	    int  _page = 0;
 	    bool _pageChanged = false;
@@ -141,10 +131,7 @@
 	    bool _isHomed = false;
 	    bool _startup = false;
 
-        char ext[10];
 	    int _minutes;
-
-        uint16_t nof;
 
         bool init_status = false;
     };

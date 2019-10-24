@@ -23,45 +23,43 @@
 		}
 	#endif
 
-	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setXPos()
 	{
-		char* xPos = ftostr52sp(printercontrol::getCurrentPosition(X_AXIS));
-		if (strcmp(xPos, _x)!=0 || _pageChanged || !isStarted())
+		float xPos = printercontrol::getCurrentPosition(X_AXIS);
+		if (xPos != _x || _pageChanged || !isStarted())
 		{
-			this->vaX.setValue(printercontrol::getCurrentPosition(X_AXIS));
-			strcpy(_x, xPos);
+			this->vaX.setValue(xPos);
+			_x = xPos;
 		}
 	}
 
 	void nextionlcdelements::setYPos() 
 	{
-		char* yPos = ftostr52sp(printercontrol::getCurrentPosition(Y_AXIS));
-		if (strcmp(yPos, _y) != 0 || _pageChanged || !isStarted())
+		float yPos = printercontrol::getCurrentPosition(Y_AXIS);
+		if (yPos != _y || _pageChanged || !isStarted())
 		{
-			this->vaY.setValue(printercontrol::getCurrentPosition(Y_AXIS));
-			strcpy(_y, yPos);
+			this->vaY.setValue(yPos);
+			_y = yPos;
 		}
 	}
 
 	void nextionlcdelements::setZPos()
 	{
-		char* zPos = ftostr52sp(printercontrol::getCurrentPosition(Z_AXIS));
-		if (strcmp(zPos, _z) != 0 || _pageChanged || !isStarted())
+		float zPos = printercontrol::getCurrentPosition(Z_AXIS);
+		if (zPos != _z || _pageChanged || !isStarted())
 		{
-			this->vaZ.setValue(printercontrol::getCurrentPosition(Z_AXIS));
-			strcpy(_z, zPos);
+			this->vaZ.setValue(zPos);
+			_z = zPos;
 		}
 	}
-	#endif
 
 	void nextionlcdelements::setBedTarget(char *temp)
 	{
-		char* inTemp = itoa(printercontrol::getDegTargetBed(), temp, 10);
-		if (strcmp(inTemp, _bt) != 0 || _pageChanged || !isStarted())
+		int16_t inTemp = printercontrol::getDegTargetBed();
+		if (inTemp != _bt || _pageChanged || !isStarted())
 		{
-			this->vaBedT.setValue(printercontrol::getDegTargetBed());
-			strcpy(_bt, inTemp);
+			this->vaBedT.setValue(inTemp);
+			_bt = inTemp;
 		}
 	}
 
@@ -75,44 +73,41 @@
 		}
 	}
 
-	#if ENABLED(MESH_BED_LEVELING)
 	void nextionlcdelements::setExtruderTarget()
 	{
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
-			char* inTemp = i16tostr3left(printercontrol::getDegTargetHotend(i));
+			int16_t inTemp = printercontrol::getDegTargetHotend(i);
 			switch (i)
 			{
 			case 0 :
-				if (strcmp(inTemp, _et) == 0 || _pageChanged || !isStarted())
+				if (inTemp != _et || _pageChanged || !isStarted())
 				{
-					this->vaExtruder1T.setValue(printercontrol::getDegTargetHotend(i));
-					strcpy(_et, inTemp);
+					this->vaExtruder1T.setValue(inTemp);
+					_et = inTemp;
 				}
 			 	break;
 			#if EXTRUDERS == 2
 				case 1:
-					if (strcmp(inTemp, _et1) == 0 || _pageChanged || !isStarted())
+					if (inTemp != _et1 || _pageChanged || !isStarted())
 					{
-						this->vaExtruder2T.setValue(printercontrol::getDegTargetHotend(i));
-						strcpy(_et1, inTemp);
+						this->vaExtruder2T.setValue(inTemp);
+						_et1 = inTemp;
 					}
 					break;
 			#endif
 			}
 		}
 	}
-	#endif
 
 	void nextionlcdelements::setExtruderActual()
 	{
-		uint16_t average;
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
 			switch (i)
 			{
 			case 0:
-				average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
+				uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 				if (_ea != average || _pageChanged || !isStarted())
 				{
 					this->vaExtruder1A.setValue(average);
@@ -133,21 +128,23 @@
 		}
 	}
 
-	void nextionlcdelements::set_allert_screen(PGM_P message)
+	void nextionlcdelements::set_allert_screen(const char* message)
 	{
-		vaLastMessage.setText(message);
 		vaAlert.setValue(1);
+		delay(1000);
+		vaLastMessage.setText(message);
+		vaKillMessage.setText(message);
 	}
 
 	void nextionlcdelements::setFan(char *temp)
 	{
 		for(unsigned i = 0; i < FAN_COUNT; i++)
 		{
-			char* inSpeed = itoa(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100), temp, 10);
-			if (strcmp(inSpeed, _fan) != 0 || _pageChanged || !isStarted())
+			int16_t inSpeed = map(printercontrol::getFanSpeed(i), 0, 255, 0, 100);
+			if (inSpeed != _fan || _pageChanged || !isStarted())
 			{
-				this->vaFan.setValue(map(printercontrol::getFanSpeed(i), 0, 255, 0, 100));
-				strcpy(_fan, inSpeed);
+				this->vaFan.setValue(inSpeed);
+				_fan = inSpeed;
 			}
 		}
 	}
@@ -212,13 +209,9 @@
 			_isPrinting = status;
 
 			if (status == 1)
-			{
 				vaIsPrinting.setValue(1);
-			}
 			else
-			{
 				vaIsPrinting.setValue(0);
-			}
 		}
 	}
 
@@ -227,7 +220,7 @@
 		if (_isHomed != status || _pageChanged || !isStarted())
 	 	{
 	 		_isHomed = status;
-         	status == 1 ? this->pHome.setPic(53) : this->pHome.setPic(20);
+         	status ? this->pHome.setPic(53) : this->pHome.setPic(20);
 	 	}
 	}
 

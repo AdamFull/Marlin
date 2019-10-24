@@ -61,7 +61,6 @@
 			SERIAL_ECHOLNPAIR("NEXTION INITIALISE IS ", initState ? "TRUE" : "FALSE");
 			SERIAL_EOL();
 		#endif
-		dispfe.setMessage("PRINTER_R");
 		
         update();
         dispfe.setStarted();
@@ -142,7 +141,6 @@
 		if(!sd_readed)
 		{
 			files_count = card.get_num_Files();
-			dispfe.setSDFileCount(files_count);
 			for(uint16_t i = 0; i<files_count; i++)
 			{
 				card.getfilename(i);
@@ -176,7 +174,7 @@
 		#endif
 	}
 
-	void NextionUI::kill_screen(PGM_P lcd_msg) 
+	void NextionUI::kill_screen(const char* lcd_msg) 
 	{
   		// RED ALERT. RED ALERT.
   		#ifdef LED_BACKLIGHT_TIMEOUT

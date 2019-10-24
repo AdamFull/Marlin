@@ -36,7 +36,7 @@ public:
 
     static void init();
     static void update();
-    static void kill_screen(PGM_P const lcd_msg);
+    static void kill_screen(const char* lcd_msg);
     static void set_alert_status_P(PGM_P message);
     static void set_status(const char* const message, const bool persist=false) {} //check
     static void set_status_P(PGM_P const message, const int8_t level=0);
