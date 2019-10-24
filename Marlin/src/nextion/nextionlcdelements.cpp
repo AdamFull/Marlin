@@ -133,6 +133,12 @@
 		}
 	}
 
+	void nextionlcdelements::set_allert_screen(PGM_P message)
+	{
+		vaLastMessage.setText(message);
+		vaAlert.setValue(1);
+	}
+
 	void nextionlcdelements::setFan(char *temp)
 	{
 		for(unsigned i = 0; i < FAN_COUNT; i++)

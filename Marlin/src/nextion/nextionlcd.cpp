@@ -155,7 +155,7 @@
 	void NextionUI::update_sd()
 	{
 		#if ENABLED(SDSUPPORT)
-			dispfe.setSDState(card.flag.detected);
+			dispfe.setSDState(card.flag.detected && files_count > 0);
 			if (!IS_SD_INSERTED())
 			{
 				if(!card.isDetected())
@@ -174,6 +174,20 @@
 				dispfe.setMessage("SD Removed");
       		}
 		#endif
+	}
+
+	void NextionUI::kill_screen(PGM_P lcd_msg) 
+	{
+  		// RED ALERT. RED ALERT.
+  		#ifdef LED_BACKLIGHT_TIMEOUT
+    		leds.set_color(LEDColorRed());
+    		#ifdef NEOPIXEL_BKGD_LED_INDEX
+      			neo.set_pixel_color(NEOPIXEL_BKGD_LED_INDEX, 255, 0, 0, 0);
+      			neo.show();
+    		#endif
+  		#endif
+
+  		dispfe.set_allert_screen(lcd_msg);
 	}
 
 	#if HAS_PRINT_PROGRESS

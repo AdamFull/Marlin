@@ -274,7 +274,7 @@ public:
   static void clear_lcd();
   static void init_lcd();
 
-  #if HAS_DISPLAY
+  #if HAS_DISPLAY && !HAS_SERIAL_LCD
 
     static void init();
     static void update();
@@ -572,7 +572,7 @@ private:
 
   static void _synchronize();
 
-  #if HAS_DISPLAY
+  #if HAS_DISPLAY && !HAS_SERIAL_LCD
     static void finish_status(const bool persist);
   #endif
 

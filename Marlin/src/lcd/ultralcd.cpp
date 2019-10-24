@@ -27,7 +27,7 @@
 #endif
 
 // All displays share the MarlinUI class
-#if HAS_DISPLAY
+#if HAS_DISPLAY && !HAS_SERIAL_LCD
   #include "ultralcd.h"
   #include "fontutils.h"
   MarlinUI ui;
@@ -1285,7 +1285,7 @@ void MarlinUI::update() {
 
 #endif // HAS_SPI_LCD
 
-#if HAS_DISPLAY
+#if HAS_DISPLAY && !HAS_SERIAL_LCD
 
   #if ENABLED(EXTENSIBLE_UI)
     #include "extensible_ui/ui_api.h"

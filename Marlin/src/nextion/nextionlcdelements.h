@@ -91,6 +91,8 @@
         void setStarted();
 	    bool isStarted();
 
+        void set_allert_screen(PGM_P message);
+
         char* XPortMsg(char* mHeader, char* inmsg);
 
     private:
@@ -104,13 +106,15 @@
         NexVariable vaBedA = NexVariable(main_page, 16, "vaBedA");
 	    NexVariable vaBedT = NexVariable(main_page, 20, "vaBedT");
 
-        NexVariable vaFan = NexVariable(main_page, 20, "vaFan");
-        NexVariable vaIsPrinting = NexVariable(main_page, 27, "vaIsPrinting");
-        NexVariable vaLastMessage = NexVariable(main_page, 27, "vaLastMessage");
-        NexVariable vaHasFan = NexVariable(main_page, 29, "vaHasFan");
+        NexVariable vaFan = NexVariable(main_page, 27, "vaFan");
+        NexVariable vaIsPrinting = NexVariable(main_page, 12, "vaIsPrinting");
+        NexVariable vaLastMessage = NexVariable(main_page, 24, "vaLastMessage");
+        NexVariable vaHasFan = NexVariable(main_page, 25, "vaHasFan");
 
-        NexButton bSDCard = NexButton(main_page, 8, "main_page.bSDCard");
-        NexPicture pSD = NexPicture(main_page, 22, "main_page.pSD");
+        NexVariable vaAlert = NexVariable(main_page, 29, "vaAlert");
+
+        NexButton bSDCard = NexButton(main_page, 5, "main_page.bSDCard");
+        NexPicture pSD = NexPicture(main_page, 11, "main_page.pSD");
         NexPicture pHome = NexPicture(main_page, 28, "main_page.pHome");
 
 	    NexVariable vaX = NexVariable(movement_page, 26, "move_page.vaX");
