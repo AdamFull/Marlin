@@ -78,24 +78,10 @@
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
 			int16_t inTemp = printercontrol::getDegTargetHotend(i);
-			switch (i)
+			if (inTemp != _et[i] || _pageChanged || !isStarted())
 			{
-			case 0 :
-				if (inTemp != _et || _pageChanged || !isStarted())
-				{
-					this->vaExtruder1T.setValue(inTemp);
-					_et = inTemp;
-				}
-			 	break;
-			#if EXTRUDERS == 2
-				case 1:
-					if (inTemp != _et1 || _pageChanged || !isStarted())
-					{
-						this->vaExtruder2T.setValue(inTemp);
-						_et1 = inTemp;
-					}
-					break;
-			#endif
+				this->vaExtrudersT[i].setValue(inTemp);
+				_et[i] = inTemp;
 			}
 		}
 	}
@@ -104,36 +90,23 @@
 	{
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
-			switch (i)
+			uint16_t average = (uint8_t)((_ea[i] + (uint8_t)printercontrol::getDegHotend(i)) / 2);
+			if (_ea[i] != average || _pageChanged || !isStarted())
 			{
-			case 0:
-				uint16_t average = (uint8_t)((_ea + (uint8_t)printercontrol::getDegHotend(i)) / 2);
-				if (_ea != average || _pageChanged || !isStarted())
-				{
-					this->vaExtruder1A.setValue(average);
-					_ea = average;
-				}
-			 	break;
-			#if EXTRUDERS > 1
-			case 1:
-				average = (uint8_t)((_ea1 + (uint8_t)printercontrol::getDegHotend(i)) / 2);
-				if (_ea1 != average || _pageChanged || !isStarted())
-			 	{
-			 		this->vaExtruder2A.setValue(average);
-			 		_ea1 = average;
-			 	}
-			 	break;
-			#endif
+				this->vaExtrudersA[i].setValue(average);
+				_ea[i] = average;
 			}
 		}
 	}
 
-	void nextionlcdelements::set_allert_screen(const char* message)
+	void nextionlcdelements::set_allert_screen()
 	{
 		vaAlert.setValue(1);
-		delay(1000);
-		vaLastMessage.setText(message);
-		vaKillMessage.setText(message);
+	}
+
+	void nextionlcdelements::set_allert_message(const char* message)
+	{
+		tKillMessage.setText(message);
 	}
 
 	void nextionlcdelements::setFan(char *temp)

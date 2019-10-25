@@ -79,17 +79,14 @@
         void setStarted();
 	    bool isStarted();
 
-        void set_allert_screen(const char* message);
+        void set_allert_screen();
+        void set_allert_message(const char* message);
 
         char* XPortMsg(char* mHeader, char* inmsg);
 
     private:
-        NexVariable vaExtruder1A = NexVariable(main_page, 14, "vaExtruder1A");
-	    NexVariable vaExtruder1T = NexVariable(main_page, 18, "vaExtruder1T");
-        #if EXTRUDERS > 1
-            NexVariable vaExtruder2A = NexVariable(main_page, 15, "vaExtruder2A");
-	        NexVariable vaExtruder2T = NexVariable(main_page, 19, "vaExtruder2T");
-        #endif
+        NexVariable vaExtrudersA[EXTRUDERS] = {NexVariable(main_page, 14, "vaExtruder1A"), NexVariable(main_page, 15, "vaExtruder2A")};
+	    NexVariable vaExtrudersT[EXTRUDERS] = {NexVariable(main_page, 18, "vaExtruder1T"), NexVariable(main_page, 19, "vaExtruder2T")};
 
         NexVariable vaBedA = NexVariable(main_page, 16, "vaBedA");
 	    NexVariable vaBedT = NexVariable(main_page, 20, "vaBedT");
@@ -99,7 +96,7 @@
         NexVariable vaLastMessage = NexVariable(main_page, 24, "vaLastMessage");
         NexVariable vaHasFan = NexVariable(main_page, 25, "vaHasFan");
 
-        NexVariable vaKillMessage = NexVariable(10, 3, "error_page.vaKillMessage");
+        NexText tKillMessage = NexText(10, 3, "error_page.tKillMessage");
 
         NexVariable vaAlert = NexVariable(main_page, 29, "vaAlert");
 
@@ -122,8 +119,8 @@
                                               NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
 
         float _x, _y, _z;
-	    int16_t _et, _et1, _fan, _bt;
-	    uint8_t  _ba, _ea, _ea1;
+	    int16_t _et[EXTRUDERS], _fan, _bt;
+	    uint8_t  _ba, _ea[EXTRUDERS];
 	    int  _page = 0;
 	    bool _pageChanged = false;
 	    //bool _caseLight, _power = 0;

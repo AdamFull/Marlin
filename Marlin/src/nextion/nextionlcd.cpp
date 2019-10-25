@@ -174,7 +174,7 @@
 		#endif
 	}
 
-	void NextionUI::kill_screen(const char* lcd_msg) 
+	void NextionUI::kill_screen(PGM_P lcd_msg)
 	{
   		// RED ALERT. RED ALERT.
   		#ifdef LED_BACKLIGHT_TIMEOUT
@@ -185,7 +185,24 @@
     		#endif
   		#endif
 
-  		dispfe.set_allert_screen(lcd_msg);
+		SERIAL_ECHO_START();
+		SERIAL_ECHOLNPAIR("Stop message: ", lcd_msg);
+		SERIAL_EOL();
+
+  		dispfe.set_allert_screen();
+		for(;;)  //wait for reboot
+		{
+		  	if(!inputQueue.isEmpty()) processBuffer(inputQueue.pop());
+        	SerialEvent();
+
+			millis_t ms = millis();
+
+	    	if (ELAPSED(ms, next_lcd_update_ms))
+        	{
+				dispfe.set_allert_message(lcd_msg);
+				next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
+			}
+		}
 	}
 
 	#if HAS_PRINT_PROGRESS
@@ -216,6 +233,20 @@
 	    char subbuff[32] = { 0 };
 
 	    switch (receivedString[0]) {
+		case 'K':
+			strLength = receivedByte - 2;
+		    memcpy(subbuff, &receivedString[2], strLength);
+			if(subbuff == "1")
+			{
+				#if ENABLED(NEXTION_DEBUG)
+					SERIAL_ECHO_START();
+					SERIAL_ECHOLNPAIR("Stop status: ", subbuff);
+					SERIAL_EOL();
+				#endif
+				void(*resetFunc)(void) = 0; // Declare resetFunc() at address 0
+    			resetFunc();                // Jump to address 0
+			}
+			break;
 		#if FAN_COUNT > 0
 	    case 'F':
 		    strLength = receivedByte - 2;
