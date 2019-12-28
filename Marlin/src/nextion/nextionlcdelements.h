@@ -85,8 +85,16 @@
         char* XPortMsg(char* mHeader, char* inmsg);
 
     private:
-        NexVariable vaExtrudersA[EXTRUDERS] = {NexVariable(main_page, 14, "vaExtruder1A"), NexVariable(main_page, 15, "vaExtruder2A")};
-	    NexVariable vaExtrudersT[EXTRUDERS] = {NexVariable(main_page, 18, "vaExtruder1T"), NexVariable(main_page, 19, "vaExtruder2T")};
+        NexVariable vaExtrudersA[EXTRUDERS] = {NexVariable(main_page, 14, "vaExtruder1A") 
+        #if EXTRUDERS >1
+        ,NexVariable(main_page, 15, "vaExtruder2A")
+        #endif
+        };
+	    NexVariable vaExtrudersT[EXTRUDERS] = {NexVariable(main_page, 18, "vaExtruder1T") 
+        #if EXTRUDERS >1
+        ,NexVariable(main_page, 19, "vaExtruder2T")
+        #endif
+        };
 
         NexVariable vaBedA = NexVariable(main_page, 16, "vaBedA");
 	    NexVariable vaBedT = NexVariable(main_page, 20, "vaBedT");
