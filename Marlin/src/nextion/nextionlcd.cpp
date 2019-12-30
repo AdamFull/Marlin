@@ -9,6 +9,8 @@
 	bool sd_readed;
 	bool sd_need_update;
 
+	unsigned long last_time;
+
 	bool readed = false;
 
 	#if ENABLED(SDSUPPORT)
@@ -24,7 +26,8 @@
 	#include "printercontrol.h"
 	
 	#include "../module/planner.h"
-	//#include "../module/printcounter.h"
+	#include "../libs/duration_t.h"
+	#include "../module/printcounter.h"
     #include "command_queue.h"
 
 	#include "../Marlin.h"
@@ -99,11 +102,13 @@
 		    	dispfe.setZPos();
 			}
 
-            #if ENABLED(ADVANCED_OK) //or HAS_ABL
+            #if ENABLED(ADVANCED_OK)
 		        dispfe.setIsPrinting(isPrinting());
             #endif
 
 		    dispfe.setIsHomed(all_axes_homed());
+			dispfe.setExtruders(EXTRUDERS);
+			dispfe.setIsPaused(card.isPaused());
 
 		    dispfe.resetPageChanged();
 
@@ -128,7 +133,20 @@
 			#if HAS_PRINT_PROGRESS
 				uint8_t progress = 0;
 				#if ENABLED(SDSUPPORT)
-					if (IS_SD_PRINTING()) progress = card.percentDone();
+					if (isPrinting()) 
+					{
+						progress = card.percentDone();
+						dispfe.setTPercentage(progress);
+						char time_buffer[21];
+  						duration_t elapsed = print_job_timer.duration();
+						uint16_t remaining_l = (elapsed.value*card.get_sdpos()/card.get_filesize())-elapsed.value;
+						duration_t remaining = duration_t(remaining_l);
+  						elapsed.toString(time_buffer);
+						dispfe.setElapsed(time_buffer);
+						remaining.toString(time_buffer);
+						dispfe.setETA(time_buffer);
+						dispfe.setMessage("Printing from SD");
+					}
 				#endif
 			#endif
 
@@ -394,7 +412,7 @@
 			    memcpy(subbuff, &message[0], dotLocation);
 			    subbuff[dotLocation] = '%';
 			    subbuff[dotLocation + 1] = '\0';
-			    dispfe.setTPercentage(subbuff);
+			    //dispfe.setTPercentage(subbuff);
 				#if ENABLED(NEXTION_DEBUG)
 					SERIAL_ECHO_START();
 					SERIAL_ECHOLNPAIR("Percentage: ", subbuff);
@@ -457,7 +475,7 @@
     }
 
 	bool NextionUI::isPrintingFromMedia() { return IFSD(card.isFileOpen(), false); }
-    bool NextionUI::isPrinting() { return (planner.movesplanned() || isPrintingFromMedia() || IFSD(IS_SD_PRINTING(), false)); }
+    bool NextionUI::isPrinting() { return (isPrintingFromMedia() || IFSD(IS_SD_PRINTING(), false)); }
     bool NextionUI::isMoving() { return planner.has_blocks_queued(); }
 
 #endif

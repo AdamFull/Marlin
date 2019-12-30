@@ -58,7 +58,14 @@
 		int16_t inTemp = printercontrol::getDegTargetBed();
 		if (inTemp != _bt || _pageChanged || !isStarted())
 		{
-			this->vaBedT.setValue(inTemp);
+			if(_page == printing_page)
+			{
+				this->vaPPBedT.setValue(inTemp);
+			}
+			else
+			{
+				this->vaBedT.setValue(inTemp);
+			}
 			_bt = inTemp;
 		}
 	}
@@ -68,7 +75,14 @@
 		uint16_t average = (uint8_t)((_ba + (uint8_t)printercontrol::getDegBed()) / 2);
 		if (_ba != average || _pageChanged || !isStarted())
 		{
-			this->vaBedA.setValue(average);
+			if(_page == printing_page)
+			{
+				this->vaPPBedA.setValue(average);
+			}
+			else
+			{
+				this->vaBedA.setValue(average);
+			}
 			_ba = average;
 		}
 	}
@@ -80,7 +94,14 @@
 			int16_t inTemp = printercontrol::getDegTargetHotend(i);
 			if (inTemp != _et[i] || _pageChanged || !isStarted())
 			{
-				this->vaExtrudersT[i].setValue(inTemp);
+				if(_page == printing_page)
+				{
+					this->vaPPExtrudersT[i].setValue(inTemp);
+				}
+				else
+				{
+					this->vaExtrudersT[i].setValue(inTemp);
+				}
 				_et[i] = inTemp;
 			}
 		}
@@ -93,7 +114,14 @@
 			uint16_t average = (uint8_t)((_ea[i] + (uint8_t)printercontrol::getDegHotend(i)) / 2);
 			if (_ea[i] != average || _pageChanged || !isStarted())
 			{
-				this->vaExtrudersA[i].setValue(average);
+				if(_page == printing_page)
+				{
+					this->vaPPExtrudersA[i].setValue(average);
+				}	
+				else
+				{
+					this->vaExtrudersA[i].setValue(average);
+				}
 				_ea[i] = average;
 			}
 		}
@@ -144,37 +172,6 @@
 		return _pageChanged;
 	}
 
-	// void nextionlcdelements::setPower(bool status)
-	// {
-	// 	if (_power != status || _pageChanged || !isStarted())
-	// 	{
-	// 		this->_power = status;
-
-	// 		this->vaPower.setValue(_power ? 1 : 0);
-	// 		if (_page == 2)
-	// 			this->btPower.setValue(_power ? 1 : 0);
-	// 		else if (_page == 1)
-    //         	status ? this->pPower.setPic(pPower_e_id) : this->pPower.setPic(pEmpty_id);
-	// 	}
-	// }
-
-	// void nextionlcdelements::setCaseLight(bool status)
-	// {
-	// 	if (_caseLight != status || _pageChanged || !isStarted())
-	// 	{
-	// 		this->_caseLight = status;
-
-	// 		this->vaLight.setValue(_caseLight ? 1 : 0);
-	// 		if (_page == 2)
-	// 			this->btLight.setValue(_caseLight ? 1 : 0);
-	// 		else if (_page == 1)
-	// 		{
-	// 			//uint32_t val = atoi(subbuff);
-    //         	status == 1 ? this->pLight.setPic(pLight_e_id) : this->pLight.setPic(pEmpty_id);
-	// 		}
-	// 	}
-	// }
-
 	void nextionlcdelements::setIsPrinting(bool status)
 	{
 		if (_isPrinting != status || _pageChanged || !isStarted())
@@ -182,9 +179,15 @@
 			_isPrinting = status;
 
 			if (status == 1)
+			{
 				vaIsPrinting.setValue(1);
+				vaPPIsPrinting.setValue(1);
+			}
 			else
+			{
 				vaIsPrinting.setValue(0);
+				vaPPIsPrinting.setValue(0);
+			}
 		}
 	}
 
@@ -215,22 +218,19 @@
 
 	void nextionlcdelements::setMessage(const char * inStr)
 	{
-		this->vaLastMessage.setText(inStr);
+		if(_page == printing_page)
+			this->tMessage.setText(inStr);
+		else
+			this->vaLastMessage.setText(inStr);
 	}
 
-	// void nextionlcdelements::setTLayers(const char * inStr)
-	// {
-	// 	this->tLayers.setText(inStr);
-	// }
-
-	void nextionlcdelements::setTETA(const char * inStr)
+	void nextionlcdelements::setTPercentage(uint8_t value)
 	{
-		this->tETA.setText(inStr);
-	}
-
-	void nextionlcdelements::setTPercentage(const char * inStr)
-	{
-		this->tPercentage.setText(inStr);
+		if(_last_perc != value)
+		{
+			_last_perc = value;
+			this->vaProgress.setValue(value);
+		}
 	}
 
 	char* nextionlcdelements::XPortMsg(char* mHeader, char* inmsg)
@@ -246,6 +246,11 @@
 		strcat(retVal,msgHeader);
 
 		return retVal;
+	}
+
+	void nextionlcdelements::animate()
+	{
+		
 	}
 
 	#if ENABLED(NEXTION_TIME)

@@ -45,7 +45,7 @@
 
         //void setTLayers(const char * inStr);
         void setTETA(const char * inStr);
-        void setTPercentage(const char * inStr);
+        void setTPercentage(uint8_t value);
 
         //void setPower(bool status);
         //void setCaseLight(bool status);
@@ -70,6 +70,14 @@
         void update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count); //SD card scroll list
 
         inline void setHasFan(bool state) { vaHasFan.setValue(state); }
+
+        inline void setExtruders(uint32_t value) { vaExtruders.setValue(value); }
+        inline void setIsPaused(bool value) { vaPaused.setValue(value ? 1 : 0); }
+
+        inline void setElapsed(const char* value) { tElapsed.setText(value); }
+        inline void setETA(const char* value) { tETA.setText(value); }
+
+        void animate();
 
         void setIsPrinting(bool status);
         void setProgress(uint8_t perc);
@@ -103,28 +111,42 @@
         NexVariable vaIsPrinting = NexVariable(main_page, 12, "vaIsPrinting");
         NexVariable vaLastMessage = NexVariable(main_page, 24, "vaLastMessage");
         NexVariable vaHasFan = NexVariable(main_page, 25, "vaHasFan");
+        NexVariable vaExtruders = NexVariable(main_page, 30, "vaExtruders");
 
-        NexText tKillMessage = NexText(10, 3, "error_page.tKillMessage");
+        NexText tKillMessage = NexText(10, 3, "tKillMessage");
 
         NexVariable vaAlert = NexVariable(main_page, 29, "vaAlert");
 
-        NexButton bSDCard = NexButton(main_page, 5, "main_page.bSDCard");
-        NexPicture pSD = NexPicture(main_page, 11, "main_page.pSD");
-        NexPicture pHome = NexPicture(main_page, 28, "main_page.pHome");
+        NexPicture pSD = NexPicture(main_page, 11, "pSD");
+        NexPicture pHome = NexPicture(main_page, 28, "pHome");
 
-	    NexVariable vaX = NexVariable(movement_page, 26, "move_page.vaX");
-	    NexVariable vaY = NexVariable(movement_page, 27, "move_page.vaY");
-	    NexVariable vaZ = NexVariable(movement_page, 28, "move_page.vaZ");
+	    NexVariable vaX = NexVariable(movement_page, 26, "vaX");
+	    NexVariable vaY = NexVariable(movement_page, 27, "vaY");
+	    NexVariable vaZ = NexVariable(movement_page, 28, "vaZ");
 
-	    //NexText tLayers = NexText(printing_page, tLayers_id, "main_page.tLayers");
-	    NexText tETA = NexText(printing_page, 16, "printing_page.tETA");
-	    NexText tPercentage = NexText(printing_page, 15, "printing_page.tPercentage");
-        NexProgressBar jPrintProgress = NexProgressBar(printing_page, 1, "printing_page.jPrintProgress");
+        NexText tElapsed = NexText(printing_page, 26, "tElapsed");
+        NexText tETA = NexText(printing_page, 27, "tETA");
+        NexText tMessage = NexText(printing_page, 6, "tMessage");
+        NexVariable vaProgress = NexVariable(printing_page, 23, "vaProgress");
+        NexVariable vaPPIsPrinting = NexVariable(printing_page, 22, "vaIsPrinting");
+        NexVariable vaPPBedA = NexVariable(printing_page, 14, "vaBedA");
+        NexVariable vaPPBedT = NexVariable(printing_page, 16, "vaBedT");
+        NexVariable vaPPExtrudersA[EXTRUDERS] = {NexVariable(printing_page, 11, "vaExtruder1A") 
+        #if EXTRUDERS >1
+        ,NexVariable(printing_page, 12, "vaExtruder2A")
+        #endif
+        };
+        NexVariable vaPPExtrudersT[EXTRUDERS] = {NexVariable(printing_page, 14, "vaExtruder1T") 
+        #if EXTRUDERS >1
+        ,NexVariable(printing_page, 15, "vaExtruder2T")
+        #endif
+        };
+        NexVariable vaPaused = NexVariable(printing_page, 23, "vaPaused");
 
-        NexVariable vaLastPos = NexVariable(SD_page, 11, "sd_page.vaLastPos");
-        NexVariable vaMax = NexVariable(SD_page, 14, "sd_page.vaMax");
-        NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "sd_page.b0"), NexButton(SD_page, 2, "sd_page.b1"), NexButton(SD_page, 3, "sd_page.b2"),
-                                              NexButton(SD_page, 4, "sd_page.b3"), NexButton(SD_page, 5, "sd_page.b4"), NexButton(SD_page, 6, "sd_page.b5")};
+        NexVariable vaLastPos = NexVariable(SD_page, 11, "vaLastPos");
+        NexVariable vaMax = NexVariable(SD_page, 14, "vaMax");
+        NexButton list_lines[num_of_lines] = {NexButton(SD_page, 1, "b0"), NexButton(SD_page, 2, "b1"), NexButton(SD_page, 3, "b2"),
+                                              NexButton(SD_page, 4, "b3"), NexButton(SD_page, 5, "b4"), NexButton(SD_page, 6, "b5")};
 
         float _x, _y, _z;
 	    int16_t _et[EXTRUDERS], _fan, _bt;
@@ -135,6 +157,8 @@
 	    bool _isPrinting = false;
 	    bool _isHomed = false;
 	    bool _startup = false;
+
+        uint8_t _last_perc;
 
 	    int _minutes;
 
