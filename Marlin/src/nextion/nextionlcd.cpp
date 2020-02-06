@@ -145,7 +145,6 @@
 						dispfe.setElapsed(time_buffer);
 						remaining.toString(time_buffer);
 						dispfe.setETA(time_buffer);
-						dispfe.setMessage("Printing from SD");
 					}
 				#endif
 			#endif
@@ -176,7 +175,6 @@
 			{
 				if(!card.isDetected())
 				{
-					dispfe.setMessage("SD Inserted");
 					card.initsd();
 					read_sd();
 				}
@@ -187,7 +185,6 @@
 				files_count = 0;
 				memset(files_list[0], 0, 27*64);
         		card.release();
-				dispfe.setMessage("SD Removed");
       		}
 		#endif
 	}
@@ -420,7 +417,6 @@
 				#endif
 			    return;
 		    }
-            dispfe.setMessage(message);
 			#if ENABLED(NEXTION_DEBUG)
 				SERIAL_ECHO_START();
 				SERIAL_ECHOLNPAIR("Displayed message: ", subbuff);
