@@ -124,8 +124,8 @@
 	    NexVariable vaY = NexVariable(movement_page, 27, "vaY");
 	    NexVariable vaZ = NexVariable(movement_page, 28, "vaZ");
 
-        NexText tElapsed = NexText(printing_page, 26, "tElapsed");
-        NexText tETA = NexText(printing_page, 27, "tETA");
+        NexText tElapsed = NexText(printing_page, 25, "tElapsed");
+        NexText tETA = NexText(printing_page, 26, "tETA");
         NexText tMessage = NexText(printing_page, 6, "tMessage");
         NexVariable vaProgress = NexVariable(printing_page, 23, "vaProgress");
         NexVariable vaPPIsPrinting = NexVariable(printing_page, 22, "vaIsPrinting");

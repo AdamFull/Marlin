@@ -46,7 +46,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  400
+    #define LCD_UPDATE_INTERVAL  200
 
     millis_t next_lcd_update_ms;
 	millis_t sd_update_ms;
@@ -139,7 +139,7 @@
 						dispfe.setTPercentage(progress);
 						char time_buffer[21];
   						duration_t elapsed = print_job_timer.duration();
-						uint16_t remaining_l = (elapsed.value*card.get_sdpos()/card.get_filesize())-elapsed.value;
+						uint32_t remaining_l = (elapsed.value*card.get_sdpos()/card.get_filesize())-elapsed.value;
 						duration_t remaining = duration_t(remaining_l);
   						elapsed.toString(time_buffer);
 						dispfe.setElapsed(time_buffer);

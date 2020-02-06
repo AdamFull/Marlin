@@ -123,6 +123,8 @@ public:
   static inline char* getWorkDirName() { workDir.getFilename(filename); return filename; }
   static inline int16_t read(void* buf, uint16_t nbyte) { return file.isOpen() ? file.read(buf, nbyte) : -1; }
   static inline int16_t write(void* buf, uint16_t nbyte) { return file.isOpen() ? file.write(buf, nbyte) : -1; }
+  static inline uint32_t get_filesize() { return filesize; }
+  static inline uint32_t get_sdpos() { return sdpos; }
 
   static Sd2Card& getSd2Card() { return sd2card; }
 
