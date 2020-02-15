@@ -294,6 +294,14 @@
 				SERIAL_EOL();
 			#endif
 		    break;
+		case 'M':
+			strLength = receivedByte - 2;
+		    memcpy(subbuff, &receivedString[2], strLength);
+		    subbuff[receivedByte - strLength] = '\0';
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("M received: ", subbuff);
+			SERIAL_EOL();
+			break;
 		case 'S':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
