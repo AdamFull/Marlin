@@ -79,6 +79,8 @@
 
         void animate();
 
+        void setKeyValue(const char* value) { tKeyPage.setText(value); }
+
         void setIsPrinting(bool status);
         void setProgress(uint8_t perc);
 	    void setIsHomed(bool status);
@@ -123,6 +125,8 @@
 	    NexVariable vaX = NexVariable(movement_page, 26, "vaX");
 	    NexVariable vaY = NexVariable(movement_page, 27, "vaY");
 	    NexVariable vaZ = NexVariable(movement_page, 28, "vaZ");
+
+        NexText tKeyPage = NexText(7, 3, "t0");
 
         NexText tElapsed = NexText(printing_page, 25, "tElapsed");
         NexText tETA = NexText(printing_page, 26, "tETA");

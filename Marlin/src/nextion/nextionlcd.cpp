@@ -29,6 +29,7 @@
 	#include "../libs/duration_t.h"
 	#include "../module/printcounter.h"
     #include "command_queue.h"
+	#include "../module/configuration_store.h"
 
 	#include "../Marlin.h"
 
@@ -297,7 +298,30 @@
 		case 'M':
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
-		    subbuff[receivedByte - strLength] = '\0';
+			int setting_num = atoi(subbuff);
+			switch (setting_num)
+			{
+			char char_buff[32];
+			case 0: dispfe.setKeyValue(itoa(planner.settings.max_feedrate_mm_s[X_AXIS],char_buff, 10)); break;
+			case 1: dispfe.setKeyValue(itoa(planner.settings.max_feedrate_mm_s[Y_AXIS],char_buff, 10)); break;
+			case 2: dispfe.setKeyValue(itoa(planner.settings.max_feedrate_mm_s[Z_AXIS],char_buff, 10)); break;
+			case 3: dispfe.setKeyValue(itoa(planner.settings.max_feedrate_mm_s[E_AXIS],char_buff, 10)); break;
+			case 4: dispfe.setKeyValue(itoa(planner.settings.max_acceleration_mm_per_s2[X_AXIS],char_buff, 10)); break;
+			case 5: dispfe.setKeyValue(itoa(planner.settings.max_acceleration_mm_per_s2[Y_AXIS],char_buff, 10)); break;
+			case 6: dispfe.setKeyValue(itoa(planner.settings.max_acceleration_mm_per_s2[Z_AXIS],char_buff, 10)); break;
+			case 7: dispfe.setKeyValue(itoa(planner.settings.max_acceleration_mm_per_s2[E_AXIS],char_buff, 10)); break;
+			case 8: dispfe.setKeyValue(itoa(planner.max_jerk[X_AXIS],char_buff, 10)); break;
+			case 9: dispfe.setKeyValue(itoa(planner.max_jerk[Y_AXIS],char_buff, 10)); break;
+			case 10: dispfe.setKeyValue(itoa(planner.max_jerk[Z_AXIS],char_buff, 10)); break;
+			case 11: dispfe.setKeyValue(itoa(planner.max_jerk[E_AXIS],char_buff, 10)); break;
+			case 13: dispfe.setKeyValue(itoa(planner.settings.axis_steps_per_mm[X_AXIS],char_buff, 10)); break;
+			case 14: dispfe.setKeyValue(itoa(planner.settings.axis_steps_per_mm[Y_AXIS],char_buff, 10)); break;
+			case 15: dispfe.setKeyValue(itoa(planner.settings.axis_steps_per_mm[Z_AXIS],char_buff, 10)); break;
+			case 16: dispfe.setKeyValue(itoa(planner.settings.axis_steps_per_mm[E_AXIS],char_buff, 10)); break;
+			
+			default:
+				break;
+			}
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("M received: ", subbuff);
 			SERIAL_EOL();
