@@ -1,5 +1,6 @@
 #include "../inc/MarlinConfig.h"
 #include "../../Configiration_nextion.h"
+#include "../module/temperature.h"
 
 #if ENABLED(NEXTION_LCD)
 
@@ -249,6 +250,20 @@
 	    char subbuff[32] = { 0 };
 
 	    switch (receivedString[0]) {
+		case 'E':
+			strLength = receivedByte - 3;
+			memcpy(subbuff, &receivedString[3], strLength);
+			subbuff[strLength + 1] = '\0';
+
+			thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
+			break;
+		case 'A':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			subbuff[strLength + 1] = '\0';
+
+			thermalManager.setTargetBed(atoi(subbuff));
+			break;
 		case 'K':
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
