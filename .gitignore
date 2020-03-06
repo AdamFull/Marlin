@@ -124,6 +124,8 @@ tags
 /lib/
 
 # Workaround for Deviot+platformio quirks
+Marlin/Configuration.h
+Marlin/Configuration_adv.h
 Marlin/lib
 Marlin/platformio.ini
 Marlin/*/platformio.ini
