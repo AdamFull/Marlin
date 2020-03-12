@@ -350,6 +350,11 @@
 			files_less += atoi(subbuff);
 			dispfe.update_sd(files_list, files_less, files_count);
 			break;
+		case 'B':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			card.flag.abort_sd_printing = true;
+			break;
 		#if defined(PS_ON_PIN)
 	     	case 'I': //Power status
 		     	strLength = receivedByte - 2;
