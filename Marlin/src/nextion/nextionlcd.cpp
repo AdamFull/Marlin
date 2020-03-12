@@ -354,6 +354,30 @@
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			card.flag.abort_sd_printing = true;
+			if (card.flag.abort_sd_printing) {
+        		card.stopSDPrint(
+          		#if SD_RESORT
+            		true
+          		#endif
+        		);
+				card.closefile();
+				card.flag.sdprinting = false;
+        		queue.clear();
+        		quickstop_stepper();
+        		print_job_timer.stop();
+        		#if DISABLED(SD_ABORT_NO_COOLDOWN)
+        		  thermalManager.disable_all_heaters();
+        		#endif
+        		thermalManager.zero_fan_speeds();
+        		wait_for_heatup = false;
+        		#if ENABLED(POWER_LOSS_RECOVERY)
+        		  card.removeJobRecoveryFile();
+        		#endif
+        		#ifdef EVENT_GCODE_SD_STOP
+        		  queue.inject_P(PSTR(EVENT_GCODE_SD_STOP));
+        		#endif
+      		}
+
 			break;
 		case 'L':
 			strLength = receivedByte - 2;
