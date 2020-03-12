@@ -34,6 +34,10 @@
 
 	#include "../Marlin.h"
 
+	#if ENABLED(NEOPIXEL_LED)
+		#include "../feature/leds/leds.h"
+	#endif
+
     #if ENABLED(NEXTION_TIME)
         #include "TimeLib.h"
     #endif
@@ -52,6 +56,8 @@
 
     millis_t next_lcd_update_ms;
 	millis_t sd_update_ms;
+
+	int led_on = 0;
 
     void NextionUI::init() 
     {
@@ -197,13 +203,7 @@
 	void NextionUI::kill_screen(PGM_P lcd_msg)
 	{
   		// RED ALERT. RED ALERT.
-  		#ifdef LED_BACKLIGHT_TIMEOUT
-    		leds.set_color(LEDColorRed());
-    		#ifdef NEOPIXEL_BKGD_LED_INDEX
-      			neo.set_pixel_color(NEOPIXEL_BKGD_LED_INDEX, 255, 0, 0, 0);
-      			neo.show();
-    		#endif
-  		#endif
+    	leds.set_color(LEDColorRed());
 
 		SERIAL_ECHO_START();
 		SERIAL_ECHOLNPAIR("Stop message: ", lcd_msg);
@@ -354,6 +354,15 @@
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			card.flag.abort_sd_printing = true;
+			break;
+		case 'L':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			//todo add feedback
+			if(atoi(subbuff) == 1)
+				leds.set_white();
+			else
+				leds.set_off();
 			break;
 		#if defined(PS_ON_PIN)
 	     	case 'I': //Power status
