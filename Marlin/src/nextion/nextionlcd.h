@@ -51,6 +51,7 @@ public:
     static inline void reset_alert_level() { alert_level = 0; }
     static void update_sd();
     static void read_sd();
+    static void read_sd_again();
 
     static void update_buttons() {} //check
 

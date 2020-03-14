@@ -161,20 +161,30 @@
         }
     }
 
+	void NextionUI::read_sd_again()
+	{
+		sd_readed = false;
+		dispfe.setSDState(card.flag.detected && files_count > 0);
+		if(IS_SD_INSERTED())
+		{
+			if(card.isDetected())
+			{
+				read_sd();
+			}
+		}
+	}
+
 	void NextionUI::read_sd()
 	{
 		if(!sd_readed)
 		{
-			while(files_count==0)
+			files_count = card.get_num_Files();
+			for(uint16_t i = 0; i<files_count; i++)
 			{
-				files_count = card.get_num_Files();
-				for(uint16_t i = 0; i<files_count; i++)
-				{
-					card.getfilename(i);
-					strcpy(files_list[i], card.filename);
-				}
-				sd_readed = true;
+				card.getfilename(i);
+				strcpy(files_list[i], card.filename);
 			}
+			sd_readed = true;
 		}
 	}
 
@@ -253,13 +263,6 @@
 	    char subbuff[32] = { 0 };
 
 	    switch (receivedString[0]) {
-		case 'E':
-			strLength = receivedByte - 3;
-			memcpy(subbuff, &receivedString[3], strLength);
-			subbuff[strLength + 1] = '\0';
-
-			thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
-			break;
 		case 'A':
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
@@ -267,19 +270,20 @@
 
 			thermalManager.setTargetBed(atoi(subbuff));
 			break;
-		case 'K':
+		case 'B':
 			strLength = receivedByte - 2;
-		    memcpy(subbuff, &receivedString[2], strLength);
-			if(subbuff == "1")
-			{
-				#if ENABLED(NEXTION_DEBUG)
-					SERIAL_ECHO_START();
-					SERIAL_ECHOLNPAIR("Stop status: ", subbuff);
-					SERIAL_EOL();
-				#endif
-				void(*resetFunc)(void) = 0; // Declare resetFunc() at address 0
-    			resetFunc();                // Jump to address 0
-			}
+			memcpy(subbuff, &receivedString[2], strLength);
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
+			SERIAL_EOL();
+			card.flag.abort_sd_printing=true;
+			break;
+		case 'E':
+			strLength = receivedByte - 3;
+			memcpy(subbuff, &receivedString[3], strLength);
+			subbuff[strLength + 1] = '\0';
+
+			thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
 			break;
 		#if FAN_COUNT > 0
 	    case 'F':
@@ -295,12 +299,35 @@
 			#endif
 		    break;
 		#endif //END FAN_COUNT
-	    case 'G': //Send g-code
+		case 'G': //Send g-code
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
 		    queue.enqueue_one_now(subbuff);
 		    break;
+		case 'K':
+			strLength = receivedByte - 2;
+		    memcpy(subbuff, &receivedString[2], strLength);
+			if(subbuff == "1")
+			{
+				#if ENABLED(NEXTION_DEBUG)
+					SERIAL_ECHO_START();
+					SERIAL_ECHOLNPAIR("Stop status: ", subbuff);
+					SERIAL_EOL();
+				#endif
+				void(*resetFunc)(void) = 0; // Declare resetFunc() at address 0
+    			resetFunc();                // Jump to address 0
+			}
+		case 'L':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			//todo add feedback
+			if(atoi(subbuff) == 1)
+				leds.set_white();
+			else
+				leds.set_off();
+			break;
+			break;
 	    case 'P':
 		    strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
@@ -313,6 +340,18 @@
 				SERIAL_EOL();
 			#endif
 		    break;
+		case 'R':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			read_sd_again();
+			dispfe.update_sd(files_list, files_less, files_count);
+			break;
+		case 'S':
+			strLength = receivedByte - 2;
+			memcpy(subbuff, &receivedString[2], strLength);
+			files_less += atoi(subbuff);
+			dispfe.update_sd(files_list, files_less, files_count);
+			break;
 		case 'M':
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
@@ -344,78 +383,6 @@
 			SERIAL_ECHOLNPAIR("M received: ", subbuff);
 			SERIAL_EOL();
 			break;
-		case 'S':
-			strLength = receivedByte - 2;
-			memcpy(subbuff, &receivedString[2], strLength);
-			files_less += atoi(subbuff);
-			dispfe.update_sd(files_list, files_less, files_count);
-			break;
-		case 'B':
-			strLength = receivedByte - 2;
-			memcpy(subbuff, &receivedString[2], strLength);
-			card.flag.abort_sd_printing = true;
-			if (card.flag.abort_sd_printing) {
-        		card.stopSDPrint(
-          		#if SD_RESORT
-            		true
-          		#endif
-        		);
-				card.closefile();
-				card.flag.sdprinting = false;
-        		queue.clear();
-        		quickstop_stepper();
-        		print_job_timer.stop();
-        		#if DISABLED(SD_ABORT_NO_COOLDOWN)
-        		  thermalManager.disable_all_heaters();
-        		#endif
-        		thermalManager.zero_fan_speeds();
-        		wait_for_heatup = false;
-        		#if ENABLED(POWER_LOSS_RECOVERY)
-        		  card.removeJobRecoveryFile();
-        		#endif
-        		#ifdef EVENT_GCODE_SD_STOP
-        		  queue.inject_P(PSTR(EVENT_GCODE_SD_STOP));
-        		#endif
-      		}
-
-			break;
-		case 'L':
-			strLength = receivedByte - 2;
-			memcpy(subbuff, &receivedString[2], strLength);
-			//todo add feedback
-			if(atoi(subbuff) == 1)
-				leds.set_white();
-			else
-				leds.set_off();
-			break;
-		#if defined(PS_ON_PIN)
-	     	case 'I': //Power status
-		     	strLength = receivedByte - 2;
-		     	memcpy(subbuff, &receivedString[2], strLength);
-		     	subbuff[receivedByte - strLength] = '\0';
-
-		    	//dispfe.setPower((bool)atoi(subbuff));
-		 		#if ENABLED(NEXTION_DEBUG)
-		 			SERIAL_ECHO_START();
-		 			SERIAL_ECHOLNPAIR("New power state: ", subbuff);
-		 			SERIAL_EOL();
-		 		#endif
-		     	break;
-		#endif //END PS_ON_PIN
-		#if ENABLED(CASE_LIGHT_ENABLE)
-	     	case 'C': //Case Light
-		    	strLength = receivedByte - 2;
-		     	memcpy(subbuff, &receivedString[2], strLength);
-		     	subbuff[receivedByte - strLength] = '\0';
-
-		     	//dispfe.setCaseLight((bool)atoi(subbuff));
-				#if ENABLED(NEXTION_DEBUG)
-					SERIAL_ECHO_START();
-					SERIAL_ECHOLNPAIR("New case light state: ", subbuff);
-					SERIAL_EOL();
-				#endif
-		    	break;
-			#endif //END CASE_LIGHT_PIN
 	    }
     }
 
