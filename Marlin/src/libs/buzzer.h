@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -23,16 +23,7 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if ENABLED(LCD_USE_I2C_BUZZER)
-
-  #define BUZZ(d,f) ui.buzz(d,f)
-
-#elif ENABLED(PCA9632_BUZZER)
-
-  #include "../feature/leds/pca9632.h"
-  #define BUZZ(d, f) pca9632_buzz(d,f)
-
-#elif PIN_EXISTS(BEEPER)
+#if USE_BEEPER
 
   #include "circularqueue.h"
 
@@ -120,10 +111,18 @@
 
   // Provide a buzzer instance
   extern Buzzer buzzer;
+
+  // Buzz directly via the BEEPER pin tone queue
   #define BUZZ(d,f) buzzer.tone(d, f)
 
-#else // No buzz capability
+#elif HAS_BUZZER
 
+  // Buzz indirectly via the MarlinUI instance
+  #define BUZZ(d,f) ui.buzz(d,f)
+
+#else
+
+  // No buzz capability
   #define BUZZ(d,f) NOOP
 
 #endif
