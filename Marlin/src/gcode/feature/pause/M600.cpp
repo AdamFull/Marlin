@@ -34,7 +34,8 @@
 #endif
 
 #if HAS_LCD_MENU
-  #include "../../../lcd/ultralcd.h"
+  //#include "../../../lcd/ultralcd.h"
+  #include "../../../display.h"
 #endif
 
 #if ENABLED(MMU2_MENUS)

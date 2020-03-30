@@ -52,7 +52,8 @@
 #endif
 
 #if HAS_DISPLAY
-  #include "../lcd/ultralcd.h"
+  //#include "../lcd/ultralcd.h"
+  #include "../display.h"
 #endif
 
 #if ENABLED(SENSORLESS_HOMING)

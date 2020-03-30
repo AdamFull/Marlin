@@ -54,7 +54,8 @@
 #endif
 
 #include "../core/language.h"
-#include "../lcd/ultralcd.h"
+//#include "../lcd/ultralcd.h"
+#include "../display.h"
 
 #if HAS_BUZZER
   #include "../libs/buzzer.h"

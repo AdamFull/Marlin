@@ -18,26 +18,16 @@
     {
     public:
         void setExtruderActual();
-        #if ENABLED(MESH_BED_LEVELING)
         void setExtruderTarget();
-        #else
-        inline void setExtruderTarget() {}
-        #endif
 
         void setBedTarget(char *temp);
         void setBedActual();
 
         inline void enableBed() { }
 
-        #if ENABLED(MESH_BED_LEVELING)
         void setXPos();
         void setYPos();
         void setZPos();
-        #else
-        inline void setXPos() {}
-        inline void setYPos() {}
-        inline void setZPos() {}
-        #endif
 
         void setMessage(const char * inStr);
 

@@ -28,7 +28,8 @@
 #include "endstops.h"
 
 #include "../MarlinCore.h"
-#include "../lcd/ultralcd.h"
+//#include "../lcd/ultralcd.h"
+#include "../display.h"
 #include "planner.h"
 #include "../core/language.h"
 #include "../HAL/shared/Delay.h"

@@ -26,7 +26,8 @@
 
 #include "../gcode.h"
 #include "../../sd/cardreader.h"
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 /**
  * M23: Open a file

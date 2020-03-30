@@ -32,7 +32,7 @@
     #include "command_queue.h"
 	#include "../module/configuration_store.h"
 
-	#include "../Marlin.h"
+	#include "../MarlinCore.h"
 
 	#if ENABLED(NEOPIXEL_LED)
 		#include "../feature/leds/leds.h"
@@ -147,7 +147,7 @@
 						dispfe.setTPercentage(progress);
 						char time_buffer[21];
   						duration_t elapsed = print_job_timer.duration();
-						uint32_t remaining_l = (elapsed.value*card.get_sdpos()/card.get_filesize())-elapsed.value;
+						uint32_t remaining_l = (elapsed.value*card.getIndex()/card.get_filesize())-elapsed.value;
 						duration_t remaining = duration_t(remaining_l);
   						elapsed.toString(time_buffer);
 						dispfe.setElapsed(time_buffer);
@@ -164,10 +164,10 @@
 	void NextionUI::read_sd_again()
 	{
 		sd_readed = false;
-		dispfe.setSDState(card.flag.detected && files_count > 0);
+		dispfe.setSDState(card.flag.mounted && files_count > 0);
 		if(IS_SD_INSERTED())
 		{
-			if(card.isDetected())
+			if(card.isMounted())
 			{
 				read_sd();
 			}
@@ -181,7 +181,7 @@
 			files_count = card.get_num_Files();
 			for(uint16_t i = 0; i<files_count; i++)
 			{
-				card.getfilename(i);
+				card.getfilename_sorted(i);
 				strcpy(files_list[i], card.filename);
 			}
 			sd_readed = true;
@@ -191,12 +191,12 @@
 	void NextionUI::update_sd()
 	{
 		#if ENABLED(SDSUPPORT)
-			dispfe.setSDState(card.flag.detected && files_count > 0);
+			dispfe.setSDState(card.flag.mounted && files_count > 0);
 			if (!IS_SD_INSERTED())
 			{
-				if(!card.isDetected())
+				if(!card.isMounted())
 				{
-					card.initsd();
+					//card.initsd();
 					read_sd();
 				}
 			}
@@ -210,14 +210,10 @@
 		#endif
 	}
 
-	void NextionUI::kill_screen(PGM_P lcd_msg)
+	void NextionUI::kill_screen(PGM_P lcd_error, PGM_P lcd_component)
 	{
   		// RED ALERT. RED ALERT.
     	leds.set_color(LEDColorRed());
-
-		SERIAL_ECHO_START();
-		SERIAL_ECHOLNPAIR("Stop message: ", lcd_msg);
-		SERIAL_EOL();
 
   		dispfe.set_allert_screen();
 		for(;;)  //wait for reboot
@@ -229,7 +225,7 @@
 
 	    	if (ELAPSED(ms, next_lcd_update_ms))
         	{
-				dispfe.set_allert_message(lcd_msg);
+				dispfe.set_allert_message(lcd_error);
 				next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
 			}
 		}

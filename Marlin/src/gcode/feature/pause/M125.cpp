@@ -32,7 +32,8 @@
 #include "../../../module/printcounter.h"
 
 #if HAS_LCD_MENU
-  #include "../../../lcd/ultralcd.h"
+  //#include "../../../lcd/ultralcd.h"
+  #include "../../../display.h"
 #endif
 
 #if ENABLED(POWER_LOSS_RECOVERY)

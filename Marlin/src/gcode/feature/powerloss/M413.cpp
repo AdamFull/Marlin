@@ -27,7 +27,8 @@
 #include "../../gcode.h"
 #include "../../../feature/powerloss.h"
 #include "../../../module/motion.h"
-#include "../../../lcd/ultralcd.h"
+//#include "../../../lcd/ultralcd.h"
+#include "../../../display.h"
 
 /**
  * M413: Enable / Disable power-loss recovery

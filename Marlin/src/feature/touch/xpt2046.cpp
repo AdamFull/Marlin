@@ -58,7 +58,8 @@ void XPT2046::init() {
   getInTouch(XPT2046_X);
 }
 
-#include "../../lcd/ultralcd.h" // For EN_C bit mask
+//#include "../../lcd/ultralcd.h" // For EN_C bit mask
+#include "../../display.h"
 
 uint8_t XPT2046::read_buttons() {
   int16_t tsoffsets[4] = { 0 };

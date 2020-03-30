@@ -45,7 +45,8 @@
   #include "../../feature/bltouch.h"
 #endif
 
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 #if HAS_L64XX                         // set L6470 absolute position registers to counts
   #include "../../libs/L64XX/L64XX_Marlin.h"

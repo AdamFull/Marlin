@@ -25,7 +25,8 @@
 #if HOTENDS && HAS_LCD_MENU
 
 #include "../gcode.h"
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 /**
  * M145: Set the heatup state for a material in the LCD menu

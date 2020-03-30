@@ -25,7 +25,8 @@
 
 #include "cancel_object.h"
 #include "../gcode/gcode.h"
-#include "../lcd/ultralcd.h"
+//#include "../lcd/ultralcd.h"
+#include "../display.h"
 
 CancelObject cancelable;
 

@@ -5,7 +5,7 @@
 
 #if ENABLED(NEXTION_LCD)
 
-    #include "../Marlin.h"
+    #include "../MarlinCore.h"
 
     #if HAS_BUZZER
         #include "../libs/buzzer.h"
@@ -36,7 +36,7 @@ public:
 
     static void init();
     static void update();
-    static void kill_screen(PGM_P const lcd_msg);
+    static void kill_screen(PGM_P const lcd_error, PGM_P const lcd_component);
     static void set_alert_status_P(PGM_P message);
     static void set_status(const char* const message, const bool persist=false) {} //check
     static void set_status_P(PGM_P const message, const int8_t level=0);
@@ -62,8 +62,9 @@ public:
     #endif
 
     static LCDViewAction lcdDrawUpdate;
-    static inline void refresh(const LCDViewAction type) { lcdDrawUpdate = type; }
-    static inline void refresh() { refresh(LCDVIEW_CLEAR_CALL_REDRAW); }
+    FORCE_INLINE static bool should_draw() { return bool(lcdDrawUpdate); }
+    FORCE_INLINE static void refresh(const LCDViewAction type) { lcdDrawUpdate = type; }
+    FORCE_INLINE static void refresh() { refresh(LCDVIEW_CLEAR_CALL_REDRAW); }
     
 private:
     static void processBuffer(const char* receivedString);
@@ -83,7 +84,10 @@ private:
 
 extern NextionUI ui;
 
-#define LCD_MESSAGEPGM(x)      ui.set_status_P(PSTR(x))
-#define LCD_ALERTMESSAGEPGM(x) ui.set_alert_status_P(PSTR(x))
+#define LCD_MESSAGEPGM_P(x)      ui.set_status_P(x)
+#define LCD_ALERTMESSAGEPGM_P(x) ui.set_alert_status_P(x)
+
+#define LCD_MESSAGEPGM(x)        LCD_MESSAGEPGM_P(GET_TEXT(x))
+#define LCD_ALERTMESSAGEPGM(x)   LCD_ALERTMESSAGEPGM_P(GET_TEXT(x))
 
 #endif

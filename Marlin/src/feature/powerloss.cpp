@@ -41,7 +41,8 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
          PrintJobRecovery::sdpos[BUFSIZE];
 
 #include "../sd/cardreader.h"
-#include "../lcd/ultralcd.h"
+//#include "../lcd/ultralcd.h"
+#include "../display.h"
 #include "../gcode/queue.h"
 #include "../gcode/gcode.h"
 #include "../module/motion.h"

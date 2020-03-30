@@ -31,7 +31,7 @@
 #include "MarlinCore.h"
 
 #include "core/utility.h"
-#include "lcd/ultralcd.h"
+#include "display.h" //#include "lcd/ultralcd.h"
 #include "module/motion.h"
 #include "module/planner.h"
 #include "module/stepper.h"
@@ -837,7 +837,7 @@ void stop() {
 
   if (IsRunning()) {
     SERIAL_ERROR_MSG(STR_ERR_STOPPED);
-    LCD_MESSAGEPGM(MSG_STOPPED);
+    //LCD_MESSAGEPGM(MSG_STOPPED);
     safe_delay(350);       // allow enough time for messages to get out before stopping
     marlin_state = MF_STOPPED;
   }

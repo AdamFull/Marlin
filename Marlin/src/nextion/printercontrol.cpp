@@ -2,7 +2,7 @@
 #include "../module/temperature.h"
 #include "../module/motion.h"
 #include "../inc/MarlinConfig.h"
-#include "../Marlin.h"
+#include "../MarlinCore.h"
 
 void printercontrol::setHotendTemperature(int temperature, int id)
 {

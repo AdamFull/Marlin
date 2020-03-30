@@ -31,7 +31,8 @@
 #include "../../feature/bedlevel/bedlevel.h"
 
 #if HAS_SPI_LCD
-  #include "../../lcd/ultralcd.h"
+  //#include "../../lcd/ultralcd.h"
+  #include "../../display.h"
 #endif
 
 #if HAS_LEVELING

@@ -34,7 +34,8 @@
 #include "../../module/temperature.h"
 #include "../../module/motion.h"
 #include "../../module/planner.h"
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 #include "../../MarlinCore.h" // for startOrResumeJob, etc.
 

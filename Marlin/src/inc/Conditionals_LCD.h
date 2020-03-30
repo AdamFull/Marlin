@@ -368,7 +368,7 @@
 #endif
 
 // Aliases for LCD features
-#if EITHER(ULTRA_LCD, EXTENSIBLE_UI)
+#if (ENABLED(ULTRA_LCD) || ENABLED(NEXTION_LCD) || ENABLED(EXTENSIBLE_UI))
   #define HAS_DISPLAY 1
   #if ENABLED(ULTRA_LCD)
     #define HAS_SPI_LCD 1

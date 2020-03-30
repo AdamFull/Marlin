@@ -36,7 +36,8 @@
 #endif
 
 #if ENABLED(LCD_BED_LEVELING)
-  #include "../../lcd/ultralcd.h"
+  //#include "../../lcd/ultralcd.h"
+  #include "../../display.h"
 #endif
 
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)

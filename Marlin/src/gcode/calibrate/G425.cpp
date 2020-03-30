@@ -30,7 +30,8 @@
   #include "../../feature/backlash.h"
 #endif
 
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 #include "../../module/motion.h"
 #include "../../module/planner.h"
 #include "../../module/tool_change.h"

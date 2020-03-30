@@ -1306,7 +1306,7 @@ void MarlinUI::update() {
 
 #endif // HAS_SPI_LCD
 
-#if HAS_DISPLAY
+#if HAS_DISPLAY && !ENABLED(NEXTION_LCD)
 
   #if ENABLED(EXTENSIBLE_UI)
     #include "extui/ui_api.h"

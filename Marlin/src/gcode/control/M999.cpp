@@ -22,7 +22,8 @@
 
 #include "../gcode.h"
 
-#include "../../lcd/ultralcd.h" // for lcd_reset_alert_level
+//#include "../../lcd/ultralcd.h" // for lcd_reset_alert_level
+#include "../../display.h"
 #include "../../MarlinCore.h"   // for marlin_state
 #include "../queue.h"           // for flush_and_request_resend
 

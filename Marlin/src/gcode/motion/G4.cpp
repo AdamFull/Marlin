@@ -22,7 +22,8 @@
 
 #include "../gcode.h"
 #include "../../module/stepper.h"
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 /**
  * G4: Dwell S<seconds> or P<milliseconds>

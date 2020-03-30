@@ -28,7 +28,8 @@
 #include "../../inc/MarlinConfig.h"
 
 #if HAS_LCD_MENU
-  #include "../../lcd/ultralcd.h"
+  //#include "../../lcd/ultralcd.h"
+  #include "../../display.h"
 #endif
 
 #if HAS_SUICIDE

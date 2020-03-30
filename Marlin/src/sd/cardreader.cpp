@@ -27,7 +27,8 @@
 #include "cardreader.h"
 
 #include "../MarlinCore.h"
-#include "../lcd/ultralcd.h"
+//#include "../lcd/ultralcd.h"
+#include "../display.h"
 #include "../module/planner.h"        // for synchronize
 #include "../module/printcounter.h"
 #include "../core/language.h"
@@ -376,7 +377,7 @@ void CardReader::mount() {
   }
   cdroot();
 
-  ui.refresh();
+  //ui.refresh();
 }
 
 void CardReader::release() {

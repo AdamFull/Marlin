@@ -328,7 +328,7 @@ public:
       static constexpr uint8_t get_progress_percent() { return 0; }
     #endif
 
-    #if HAS_SPI_LCD
+    #if HAS_SPI_LCD && !ENABLED(NEXTION_LCD)
 
       static millis_t next_button_update_ms;
 

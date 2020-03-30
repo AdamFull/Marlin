@@ -21,7 +21,8 @@
  */
 
 #include "../gcode.h"
-#include "../../lcd/ultralcd.h"
+//#include "../../lcd/ultralcd.h"
+#include "../../display.h"
 
 /**
  * M117: Set LCD Status Message

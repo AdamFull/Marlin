@@ -22,7 +22,8 @@
 
 #include "../gcode.h"
 #include "../../MarlinCore.h" // for stepper_inactive_time, disable_e_steppers
-#include "../../lcd/ultralcd.h"
+#include "../../display.h"
+//#include "../../lcd/ultralcd.h"
 #include "../../module/stepper.h"
 
 #if BOTH(AUTO_BED_LEVELING_UBL, ULTRA_LCD)
