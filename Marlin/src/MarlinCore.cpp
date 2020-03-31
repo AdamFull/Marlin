@@ -963,7 +963,7 @@ void setup() {
   SERIAL_ECHO_START();
   SERIAL_ECHOLNPAIR(STR_FREE_MEMORY, freeMemory(), STR_PLANNER_BUFFER_BYTES, (int)sizeof(block_t) * (BLOCK_BUFFER_SIZE));
 
-  // UI must be initialized before EEPROM
+  //  must be initialized before EEPROM
   // (because EEPROM code calls the UI).
 
   #if ENABLED(MARLIN_DEV_MODE)

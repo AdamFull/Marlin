@@ -77,6 +77,8 @@
         dispfe.setStarted();
     }
 
+	LCDViewAction NextionUI::lcdDrawUpdate = LCDVIEW_CLEAR_CALL_REDRAW;
+
     void NextionUI::update() 
     {
         if(!inputQueue.isEmpty()) processBuffer(inputQueue.pop());
@@ -250,7 +252,37 @@
     bool NextionUI::has_status() { return (lcd_status_message[0] != '\0'); }
     void NextionUI::set_alert_status_P(PGM_P message) { processMessage(message); }
     void NextionUI::set_status_P(const char* message, const int8_t level) { processMessage(message);}
-    void NextionUI::reset_status() {}
+    void NextionUI::reset_status(const bool no_welcome) {}
+
+	void NextionUI::set_status(const char * const message, const bool persist)
+	{
+		if (alert_level) return;
+
+    	/*#if ENABLED(HOST_PROMPT_SUPPORT)
+    	  host_action_notify(message);
+    	#endif
+
+    	// Here we have a problem. The message is encoded in UTF8, so
+    	// arbitrarily cutting it will be a problem. We MUST be sure
+    	// that there is no cutting in the middle of a multibyte character!
+
+    	// Get a pointer to the null terminator
+    	const char* pend = message + strlen(message);
+
+    	//  If length of supplied UTF8 string is greater than
+    	// our buffer size, start cutting whole UTF8 chars
+    	while ((pend - message) > MAX_MESSAGE_LENGTH) {
+      	--pend;
+      	while (!START_OF_UTF8_CHAR(*pend)) --pend;
+    	};
+
+    	// At this point, we have the proper cut point. Use it
+    	uint8_t maxLen = pend - message;
+    	strncpy(status_message, message, maxLen);
+    	status_message[maxLen] = '\0';
+
+    	finish_status(persist);*/
+	}
 
     void NextionUI::processBuffer(const char* receivedString)
     {

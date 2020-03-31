@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../inc/MarlinConfig.h"
+#include "../inc/MarlinConfigPre.h"
 #include "../../Configiration_nextion.h"
 
 #if ENABLED(NEXTION_LCD)
@@ -19,12 +19,12 @@
     #endif
 
     enum LCDViewAction : uint8_t {
-        LCDVIEW_NONE,
-        LCDVIEW_REDRAW_NOW,
-        LCDVIEW_CALL_REDRAW_NEXT,
-        LCDVIEW_CLEAR_CALL_REDRAW,
-        LCDVIEW_CALL_NO_REDRAW
-    };
+    LCDVIEW_NONE,
+    LCDVIEW_REDRAW_NOW,
+    LCDVIEW_CALL_REDRAW_NEXT,
+    LCDVIEW_CLEAR_CALL_REDRAW,
+    LCDVIEW_CALL_NO_REDRAW
+  };
 
 class NextionUI
 {
@@ -37,11 +37,11 @@ public:
     static void init();
     static void update();
     static void kill_screen(PGM_P const lcd_error, PGM_P const lcd_component);
-    static void set_alert_status_P(PGM_P message);
-    static void set_status(const char* const message, const bool persist=false) {} //check
+    static void set_alert_status_P(PGM_P const message);
+    static void set_status(const char* const message, const bool persist=false);
     static void set_status_P(PGM_P const message, const int8_t level=0);
     static inline void status_printf_P(const uint8_t level, PGM_P const fmt, ...) { UNUSED(level); UNUSED(fmt); }
-    static void reset_status();
+    static void reset_status(const bool no_welcome=false);
 
     static bool has_status();
 
@@ -49,6 +49,7 @@ public:
 
     static uint8_t alert_level; // Higher levels block lower levels
     static inline void reset_alert_level() { alert_level = 0; }
+
     static void update_sd();
     static void read_sd();
     static void read_sd_again();
