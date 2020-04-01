@@ -22,7 +22,7 @@
 	#endif
 
     #include "nextionlcd.h"
-	NextionUI ui;
+	//NextionUI ui;
     #include "nextionlcdelements.h"
 	#include "printercontrol.h"
 	
