@@ -297,6 +297,9 @@
 			subbuff[strLength + 1] = '\0';
 
 			thermalManager.setTargetBed(atoi(subbuff));
+			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
+    			thermalManager.check_timer_autostart(false, true);
+  			#endif
 			break;
 		case 'B':
 			strLength = receivedByte - 2;
@@ -304,7 +307,8 @@
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
-			card.flag.abort_sd_printing=true;
+			if (IS_SD_PRINTING())
+				card.flag.abort_sd_printing=true;
 			break;
 		case 'E':
 			strLength = receivedByte - 3;
@@ -312,6 +316,9 @@
 			subbuff[strLength + 1] = '\0';
 
 			thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
+			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
+    			thermalManager.check_timer_autostart(false, true);
+  			#endif
 			break;
 		#if FAN_COUNT > 0
 	    case 'F':
