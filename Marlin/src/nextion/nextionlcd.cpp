@@ -193,12 +193,12 @@
 	void NextionUI::update_sd()
 	{
 		#if ENABLED(SDSUPPORT)
-			dispfe.setSDState(card.flag.mounted && files_count > 0);
+			dispfe.setSDState(card.flag.mounted);
 			if (!IS_SD_INSERTED())
 			{
 				if(!card.isMounted())
 				{
-					//card.initsd();
+					card.mount();
 					read_sd();
 				}
 			}
