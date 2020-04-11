@@ -112,9 +112,9 @@
 		    	dispfe.setZPos();
 			}
 
-            #if ENABLED(ADVANCED_OK)
-		        dispfe.setIsPrinting(isPrinting());
-            #endif
+            
+		    dispfe.setIsPrinting(isPrinting());
+            
 
 		    dispfe.setIsHomed(all_axes_homed());
 			dispfe.setExtruders(EXTRUDERS);
@@ -308,7 +308,11 @@
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
 			if (IS_SD_PRINTING())
+			{
 				card.flag.abort_sd_printing=true;
+				print_job_timer.stop();
+				dispfe.setIsPrinting(false);
+			}
 			break;
 		case 'E':
 			strLength = receivedByte - 3;
