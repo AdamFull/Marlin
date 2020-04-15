@@ -254,6 +254,25 @@
     void NextionUI::set_status_P(const char* message, const int8_t level) { processMessage(message);}
     void NextionUI::reset_status(const bool no_welcome) {}
 
+	void NextionUI::abort_print()
+	{
+		#if ENABLED(SDSUPPORT)
+      		wait_for_heatup = false;
+      		card.flag.abort_sd_printing = true;
+    	#endif
+    	#ifdef ACTION_ON_CANCEL
+      		host_action_cancel();
+    	#endif
+    	#if ENABLED(HOST_PROMPT_SUPPORT)
+      		host_prompt_open(PROMPT_INFO, PSTR("UI Aborted"), DISMISS_STR);
+    	#endif
+    	print_job_timer.stop();
+    	set_status_P(GET_TEXT(MSG_PRINT_ABORTED));
+    	#if HAS_LCD_MENU
+      		return_to_status();
+    	#endif
+	}
+
 	void NextionUI::set_status(const char * const message, const bool persist)
 	{
 		if (alert_level) return;
@@ -307,18 +326,24 @@
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
-			card.flag.abort_sd_printing=true;
-			print_job_timer.stop();
+			abort_print();
 			break;
 		case 'E':
 			strLength = receivedByte - 3;
 			memcpy(subbuff, &receivedString[3], strLength);
 			subbuff[strLength + 1] = '\0';
 
-			thermalManager.setTargetHotend(atoi(subbuff), ((int)receivedString[1]) - 1);
+			const int8_t target_extruder = ((int)receivedString[1]) - 1;
+			const int16_t temp = atoi(subbuff);
+
+			thermalManager.setTargetHotend(temp, target_extruder);
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
     			thermalManager.check_timer_autostart(false, true);
   			#endif
+			#if ENABLED(AUTOTEMP)
+    			planner.autotemp_M104_M109();
+  			#endif
+			(void)thermalManager.wait_for_hotend(target_extruder, true);
 			break;
 		#if FAN_COUNT > 0
 	    case 'F':
@@ -561,7 +586,7 @@
     }
 
 	bool NextionUI::isPrintingFromMedia() { return IFSD(card.isFileOpen(), false); }
-    bool NextionUI::isPrinting() { return (isPrintingFromMedia() || IFSD(IS_SD_PRINTING(), false)); }
+    bool NextionUI::isPrinting() { return (planner.movesplanned() || isPrintingFromMedia() || IFSD(IS_SD_PRINTING(), false)); }
     bool NextionUI::isMoving() { return planner.has_blocks_queued(); }
 
 #endif
