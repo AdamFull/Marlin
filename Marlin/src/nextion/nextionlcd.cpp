@@ -307,12 +307,8 @@
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
-			if (IS_SD_PRINTING())
-			{
-				card.flag.abort_sd_printing=true;
-				print_job_timer.stop();
-				dispfe.setIsPrinting(false);
-			}
+			card.flag.abort_sd_printing=true;
+			print_job_timer.stop();
 			break;
 		case 'E':
 			strLength = receivedByte - 3;

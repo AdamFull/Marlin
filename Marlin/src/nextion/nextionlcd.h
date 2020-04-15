@@ -42,6 +42,7 @@ public:
     static void set_status_P(PGM_P const message, const int8_t level=0);
     static inline void status_printf_P(const uint8_t level, PGM_P const fmt, ...) { UNUSED(level); UNUSED(fmt); }
     static void reset_status(const bool no_welcome=false);
+    //static void return_to_status();
 
     static bool has_status();
 
