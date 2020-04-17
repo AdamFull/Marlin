@@ -311,6 +311,7 @@
 
 	    switch (receivedString[0]) {
 		case 'A':
+		{
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			subbuff[strLength + 1] = '\0';
@@ -319,16 +320,18 @@
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
     			thermalManager.check_timer_autostart(false, true);
   			#endif
-			break;
+		}break;
 		case 'B':
+		{
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
 			abort_print();
-			break;
+		}break;
 		case 'E':
+		{
 			strLength = receivedByte - 3;
 			memcpy(subbuff, &receivedString[3], strLength);
 			subbuff[strLength + 1] = '\0';
@@ -344,10 +347,11 @@
     			planner.autotemp_M104_M109();
   			#endif
 			(void)thermalManager.wait_for_hotend(target_extruder, true);
-			break;
+		}break;
 		#if FAN_COUNT > 0
 	    case 'F':
-		    strLength = receivedByte - 2;
+		{
+			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength + 1] = '\0';
 
@@ -357,15 +361,20 @@
 				SERIAL_ECHOLNPAIR("New fan speed: ", subbuff);
 				SERIAL_EOL();
 			#endif
-		    break;
+		}break;
 		#endif //END FAN_COUNT
 		case 'G': //Send g-code
-		    strLength = receivedByte - 2;
+		{
+			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[strLength] = '\0';
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("GCODE RECEIVED: ", subbuff);
+			SERIAL_EOL();
 		    queue.enqueue_one_now(subbuff);
-		    break;
+		}break;
 		case 'K':
+		{
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 			if(subbuff == "1")
@@ -378,7 +387,9 @@
 				void(*resetFunc)(void) = 0; // Declare resetFunc() at address 0
     			resetFunc();                // Jump to address 0
 			}
+		}break;
 		case 'L':
+		{
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			//todo add feedback
@@ -386,10 +397,10 @@
 				leds.set_white();
 			else
 				leds.set_off();
-			break;
-			break;
+		}break;
 	    case 'P':
-		    strLength = receivedByte - 2;
+		{
+			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 		    subbuff[receivedByte - strLength] = '\0';
 
@@ -399,20 +410,23 @@
 				SERIAL_ECHOLNPAIR("Page id: ", subbuff);
 				SERIAL_EOL();
 			#endif
-		    break;
+		}break;
 		case 'R':
+		{
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			read_sd_again();
 			dispfe.update_sd(files_list, files_less, files_count);
-			break;
+		}break;
 		case 'S':
+		{
 			strLength = receivedByte - 2;
 			memcpy(subbuff, &receivedString[2], strLength);
 			files_less += atoi(subbuff);
 			dispfe.update_sd(files_list, files_less, files_count);
-			break;
+		}break;
 		case 'M':
+		{
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
 			int setting_num = atoi(subbuff);
@@ -442,7 +456,7 @@
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("M received: ", subbuff);
 			SERIAL_EOL();
-			break;
+		}break;
 	    }
     }
 
