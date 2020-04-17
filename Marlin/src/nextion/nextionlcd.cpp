@@ -113,7 +113,7 @@
 			}
 
             
-		    dispfe.setIsPrinting(isPrinting());
+		    dispfe.setIsPrinting(isPrintingFromMedia());
             
 
 		    dispfe.setIsHomed(all_axes_homed());
