@@ -127,14 +127,15 @@
 		}
 	}
 
-	void nextionlcdelements::set_allert_screen()
+	void nextionlcdelements::set_allert_screen(PGM_P lcd_error)
 	{
 		vaAlert.setValue(1);
+		vaKillMessage.setText("Error received");
 	}
 
 	void nextionlcdelements::set_allert_message(const char* message)
 	{
-		tKillMessage.setText(message);
+		vaKillMessage.setText(message);
 	}
 
 	void nextionlcdelements::setFan(char *temp)

@@ -7,8 +7,10 @@
     #include "WProgram.h"
 #endif
 
-#define BUFSIZE 8
-#define MAX_CMD_SIZE 32
+#include "../inc/MarlinConfig.h"
+
+//#define BUFSIZE 8
+//#define MAX_CMD_SIZE 32
 
 class command_queue
 {

@@ -79,7 +79,7 @@
         void setStarted();
 	    bool isStarted();
 
-        void set_allert_screen();
+        void set_allert_screen(PGM_P lcd_error);
         void set_allert_message(const char* message);
 
         char* XPortMsg(char* mHeader, char* inmsg);
@@ -105,7 +105,7 @@
         NexVariable vaHasFan = NexVariable(main_page, 25, "vaHasFan");
         NexVariable vaExtruders = NexVariable(main_page, 30, "vaExtruders");
 
-        NexText tKillMessage = NexText(10, 3, "tKillMessage");
+        NexVariable vaKillMessage = NexVariable(10, 1, "vaKillMessage");
 
         NexVariable vaAlert = NexVariable(main_page, 29, "vaAlert");
 

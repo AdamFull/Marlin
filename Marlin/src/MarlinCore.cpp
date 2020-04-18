@@ -778,7 +778,8 @@ void kill(PGM_P const lcd_error/*=nullptr*/, PGM_P const lcd_component/*=nullptr
     host_action_kill();
   #endif
 
-  minkill(steppers_off);
+  //minkill(steppers_off);
+  ui.kill_screen(lcd_error, lcd_component);
 }
 
 void minkill(const bool steppers_off/*=false*/) {

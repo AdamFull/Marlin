@@ -12,7 +12,7 @@
 
 	unsigned long last_time;
 
-	bool readed = false;
+	bool readed, killed = false;
 
 	#if ENABLED(SDSUPPORT)
   		#include "../sd/cardreader.h"
@@ -112,13 +112,11 @@
 		    	dispfe.setZPos();
 			}
 
-            
-		    dispfe.setIsPrinting(isPrintingFromMedia());
-            
+		    if(!killed) dispfe.setIsPrinting(isPrintingFromMedia());
 
-		    dispfe.setIsHomed(all_axes_homed());
-			dispfe.setExtruders(EXTRUDERS);
-			dispfe.setIsPaused(card.isPaused());
+		    if(!killed) dispfe.setIsHomed(all_axes_homed());
+			if(!killed) dispfe.setExtruders(EXTRUDERS);
+			//dispfe.setIsPaused(card.isPaused());
 
 		    dispfe.resetPageChanged();
 
@@ -127,7 +125,7 @@
 		        dispfe.setTime();
             #endif
 
-			update_sd();
+			if(!killed) update_sd();
 
 			if(sd_readed && dispfe.getPage() == SD_page)
 			{
@@ -214,22 +212,19 @@
 
 	void NextionUI::kill_screen(PGM_P lcd_error, PGM_P lcd_component)
 	{
-  		// RED ALERT. RED ALERT.
-    	leds.set_color(LEDColorRed());
+		dispfe.setIsPrinting(false);
+  		dispfe.set_allert_screen(lcd_error);
+		killed = true;
 
-  		dispfe.set_allert_screen();
+		for (int i = 1000; i--;) delayMicroseconds(600);
+		for (int i = 1000; i--;) delayMicroseconds(250);
+		thermalManager.disable_all_heaters();
+		disable_all_steppers();
+
 		for(;;)  //wait for reboot
 		{
-		  	if(!inputQueue.isEmpty()) processBuffer(inputQueue.pop());
-        	SerialEvent();
-
-			millis_t ms = millis();
-
-	    	if (ELAPSED(ms, next_lcd_update_ms))
-        	{
-				dispfe.set_allert_message(lcd_error);
-				next_lcd_update_ms = ms + LCD_UPDATE_INTERVAL;
-			}
+			watchdog_refresh();
+		  	update();
 		}
 	}
 
@@ -267,6 +262,7 @@
       		host_prompt_open(PROMPT_INFO, PSTR("UI Aborted"), DISMISS_STR);
     	#endif
     	print_job_timer.stop();
+		print_job_timer.reset();
     	set_status_P(GET_TEXT(MSG_PRINT_ABORTED));
     	#if HAS_LCD_MENU
       		return_to_status();
@@ -276,31 +272,6 @@
 	void NextionUI::set_status(const char * const message, const bool persist)
 	{
 		if (alert_level) return;
-
-    	/*#if ENABLED(HOST_PROMPT_SUPPORT)
-    	  host_action_notify(message);
-    	#endif
-
-    	// Here we have a problem. The message is encoded in UTF8, so
-    	// arbitrarily cutting it will be a problem. We MUST be sure
-    	// that there is no cutting in the middle of a multibyte character!
-
-    	// Get a pointer to the null terminator
-    	const char* pend = message + strlen(message);
-
-    	//  If length of supplied UTF8 string is greater than
-    	// our buffer size, start cutting whole UTF8 chars
-    	while ((pend - message) > MAX_MESSAGE_LENGTH) {
-      	--pend;
-      	while (!START_OF_UTF8_CHAR(*pend)) --pend;
-    	};
-
-    	// At this point, we have the proper cut point. Use it
-    	uint8_t maxLen = pend - message;
-    	strncpy(status_message, message, maxLen);
-    	status_message[maxLen] = '\0';
-
-    	finish_status(persist);*/
 	}
 
     void NextionUI::processBuffer(const char* receivedString)
@@ -346,7 +317,7 @@
 			#if ENABLED(AUTOTEMP)
     			planner.autotemp_M104_M109();
   			#endif
-			(void)thermalManager.wait_for_hotend(target_extruder, true);
+			//(void)thermalManager.wait_for_hotend(target_extruder, true);
 		}break;
 		#if FAN_COUNT > 0
 	    case 'F':
@@ -373,11 +344,31 @@
 			SERIAL_EOL();
 		    queue.enqueue_one_now(subbuff);
 		}break;
+		case 'H':
+		{
+			strLength = receivedByte - 2;
+		    memcpy(subbuff, &receivedString[2], strLength);
+		    //subbuff[strLength + 1] = '\0';
+			int i = 0, j = 0; 
+    		while (subbuff[i]) 
+    		{ 
+        		if (subbuff[i] != ' ') 
+           			subbuff[j++] = subbuff[i]; 
+        		i++; 
+    		} 
+    		subbuff[j] = '\0'; 
+			card.openFileRead(subbuff); //Received filename
+			if (card.isFileOpen()) 
+			{
+    			card.startFileprint();            // SD card will now be read for commands
+    			startOrResumeJob();
+			}
+		}break;
 		case 'K':
 		{
 			strLength = receivedByte - 2;
 		    memcpy(subbuff, &receivedString[2], strLength);
-			if(subbuff == "1")
+			if(strcmp(subbuff, "1") == 0)
 			{
 				#if ENABLED(NEXTION_DEBUG)
 					SERIAL_ECHO_START();
@@ -477,83 +468,8 @@
     }
 
     void NextionUI::processMessage(const char * message)
-    {
-		#if ENABLED(NEXTION_DEBUG)
-        	SERIAL_ECHO_START();
-	    	SERIAL_ECHOLNPAIR("Received message: ", message);
-	    	SERIAL_EOL();
-		#endif
-
-        char subbuff[32];
-	    char buff[5];
-        
-        if (message[0] == 'L' && message[1] == 'a') //La/yer
-	    {
-		    const uint8_t startPos = 6;
-		    uint8_t toCounter = startPos;
-		    while (toCounter<32)
-		    {
-			    if (message[toCounter] == ' ')
-			    {
-				    memcpy(subbuff, &message[startPos], toCounter - startPos);
-				    subbuff[toCounter - startPos] = '\0';
-				    break;
-			    }
-			    toCounter++;
-		    }
-		    //dispfe.setTLayers(subbuff);
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("Layer count: ", subbuff);
-				SERIAL_EOL();
-			#endif
-		    return;
-	    }
-        #if ENABLED(NEXTION_TIME)
-        else if (message[0] == 'T' && message[1] == 'M' && message[2] == '=')
-	    {
-		    unsigned long myTime;
-		    strlcpy(subbuff, &message[3], 11);
-		    myTime = atol(subbuff) + 7200;
-		    setTime(myTime);
-        }
-        #endif
-        else
-        {
-            bool dotFound = false;
-		    uint8_t dotLocation = 0;
-		    if (message[0] != 'I' && message[1] != 'P' && message[0]!='H') //exclude IP Address and Heating...
-		    {
-                for (uint8_t i = 0; i < 9; i++)
-			    {
-				    if (message[i] == '.')
-				    {
-					    dotFound = true;
-					    dotLocation = i;
-				    }
-			    }
-            }
-            if (dotFound)
-		    {
-			    memcpy(subbuff, &message[0], dotLocation);
-			    subbuff[dotLocation] = '%';
-			    subbuff[dotLocation + 1] = '\0';
-			    //dispfe.setTPercentage(subbuff);
-				#if ENABLED(NEXTION_DEBUG)
-					SERIAL_ECHO_START();
-					SERIAL_ECHOLNPAIR("Percentage: ", subbuff);
-					SERIAL_EOL();
-				#endif
-			    return;
-		    }
-			#if ENABLED(NEXTION_DEBUG)
-				SERIAL_ECHO_START();
-				SERIAL_ECHOLNPAIR("Displayed message: ", subbuff);
-				SERIAL_EOL();
-			#endif
-            return;
-        }
-        
+    {	
+        UNUSED(message);
     }
 
     void NextionUI::SerialEvent() 
