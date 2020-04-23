@@ -9,8 +9,8 @@
 
 #include "../inc/MarlinConfig.h"
 
-//#define BUFSIZE 8
-//#define MAX_CMD_SIZE 32
+#define NEXBUFSIZE 8
+#define NEX_MAX_CMD_SIZE 32
 
 class command_queue
 {
@@ -21,7 +21,7 @@ public:
     inline uint8_t length() { return count; }
 
 private:
-	char buffer[BUFSIZE][MAX_CMD_SIZE];
+	char buffer[NEXBUFSIZE][NEX_MAX_CMD_SIZE];
 
 	uint8_t queue_index_r = 0,
 		queue_index_w = 0,
