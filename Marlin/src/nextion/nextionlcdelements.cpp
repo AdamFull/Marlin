@@ -9,7 +9,7 @@
 		void nextionlcdelements::update_sd(char files_list[64][27], uint16_t files_less, uint16_t files_count)
 		{
 			vaLastPos.setValue(files_less);
-			vaMax.setValue(files_count - files_less - (files_count >= 6 ? 6 : 0));
+			vaMax.setValue(files_count <= 6 ? 0 : files_count - 6 - files_less);
 			for(unsigned i = 0; i < num_of_lines; i++)
 			{
 				if(files_count<=num_of_lines)
