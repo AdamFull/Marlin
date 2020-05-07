@@ -4,7 +4,7 @@
 
 #if ENABLED(NEXTION_LCD)
 
-	uint16_t files_count;
+	uint16_t files_count = 0;
     char files_list[64][27];
     uint16_t files_less;
 	bool sd_readed;
@@ -179,6 +179,9 @@
 		if(!sd_readed)
 		{
 			files_count = card.get_num_Files();
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("Stop received: ", files_count);
+			SERIAL_EOL();
 			for(uint16_t i = 0; i<files_count; i++)
 			{
 				card.getfilename_sorted(i);
