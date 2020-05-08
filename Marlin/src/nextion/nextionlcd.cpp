@@ -141,7 +141,7 @@
 			#if HAS_PRINT_PROGRESS
 				uint8_t progress = 0;
 				#if ENABLED(SDSUPPORT)
-					if (isPrinting()) 
+					if (isPrintingFromMedia()) 
 					{
 						progress = card.percentDone();
 						dispfe.setTPercentage(progress);
@@ -199,8 +199,13 @@
 			{
 				if(!card.isMounted())
 				{
-					card.mount();
-					read_sd();
+					while(files_count == 0){
+						sd_readed = false;
+						memset(files_list[0], 0, 27*64);
+						card.release();
+						card.mount();
+						read_sd();
+					}
 				}
 			}
 			else
@@ -241,7 +246,7 @@
         	uint8_t progress = 0;
       	#endif
       	#if ENABLED(SDSUPPORT)
-        	if (IS_SD_PRINTING()) progress = card.percentDone();
+        	if (isPrintingFromMedia()) progress = card.percentDone();
       	#endif
       	return _PLIMIT(progress);
     }
@@ -256,7 +261,13 @@
 	{
 		#if ENABLED(SDSUPPORT)
       		wait_for_heatup = false;
-      		card.flag.abort_sd_printing = true;
+			card.flag.abort_sd_printing = true;
+			while (isPrintingFromMedia())
+				card.closefile();
+			card.flag.sdprinting = false;
+			if(planner.movesplanned())
+				planner.finish_and_disable();
+			
     	#endif
     	#ifdef ACTION_ON_CANCEL
       		host_action_cancel();
