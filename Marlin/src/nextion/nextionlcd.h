@@ -52,7 +52,7 @@ public:
     static uint8_t alert_level; // Higher levels block lower levels
     static inline void reset_alert_level() { alert_level = 0; }
 
-    static void update_sd();
+    static void update_sd(bool is_inserted, bool forcibly=false);
     static void read_sd();
     static void read_sd_again();
 

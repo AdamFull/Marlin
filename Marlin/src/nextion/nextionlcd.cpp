@@ -125,7 +125,7 @@
 		        dispfe.setTime();
             #endif
 
-			if(!killed) update_sd();
+			if(!killed) update_sd(!IS_SD_INSERTED());
 
 			if(sd_readed && dispfe.getPage() == SD_page)
 			{
@@ -191,13 +191,13 @@
 		}
 	}
 
-	void NextionUI::update_sd()
+	void NextionUI::update_sd(bool is_inserted, bool forcibly=false)
 	{
 		#if ENABLED(SDSUPPORT)
 			dispfe.setSDState(card.flag.mounted);
-			if (!IS_SD_INSERTED())
+			if (is_inserted)
 			{
-				if(!card.isMounted())
+				if(!card.isMounted() || forcibly)
 				{
 					while(files_count == 0){
 						sd_readed = false;
@@ -314,6 +314,7 @@
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
 			abort_print();
+			update_sd(true, true);
 		}break;
 		case 'E':
 		{
