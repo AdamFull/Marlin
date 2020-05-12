@@ -25,7 +25,7 @@
 
 	void nextionlcdelements::setXPos()
 	{
-		float xPos = printercontrol::getCurrentPosition(X_AXIS);
+		uint32_t xPos = (uint32_t)printercontrol::getCurrentPosition(X_AXIS);
 		if (xPos != _x || _pageChanged || !isStarted())
 		{
 			this->vaX.setValue(xPos);
@@ -35,7 +35,7 @@
 
 	void nextionlcdelements::setYPos() 
 	{
-		float yPos = printercontrol::getCurrentPosition(Y_AXIS);
+		uint32_t yPos = (uint32_t)printercontrol::getCurrentPosition(Y_AXIS);
 		if (yPos != _y || _pageChanged || !isStarted())
 		{
 			this->vaY.setValue(yPos);
@@ -45,7 +45,7 @@
 
 	void nextionlcdelements::setZPos()
 	{
-		float zPos = printercontrol::getCurrentPosition(Z_AXIS);
+		uint32_t zPos = (uint32_t)printercontrol::getCurrentPosition(Z_AXIS);
 		if (zPos != _z || _pageChanged || !isStarted())
 		{
 			this->vaZ.setValue(zPos);
@@ -55,7 +55,7 @@
 
 	void nextionlcdelements::setBedTarget(char *temp)
 	{
-		int16_t inTemp = printercontrol::getDegTargetBed();
+		int32_t inTemp = (int32_t)printercontrol::getDegTargetBed();
 		if (inTemp != _bt || _pageChanged || !isStarted())
 		{
 			if(_page == printing_page)
@@ -72,7 +72,7 @@
 
 	void nextionlcdelements::setBedActual()
 	{
-		uint16_t average = (uint8_t)((_ba + (uint8_t)printercontrol::getDegBed()) / 2);
+		uint32_t average = (uint32_t)((_ba + (uint32_t)printercontrol::getDegBed()) / 2);
 		if (_ba != average || _pageChanged || !isStarted())
 		{
 			if(_page == printing_page)
@@ -91,17 +91,11 @@
 	{
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
-			int16_t inTemp = printercontrol::getDegTargetHotend(i);
+			int32_t inTemp = (int32_t)printercontrol::getDegTargetHotend(i);
 			if (inTemp != _et[i] || _pageChanged || !isStarted())
 			{
-				if(_page == printing_page)
-				{
-					this->vaPPExtrudersT[i].setValue(inTemp);
-				}
-				else
-				{
-					this->vaExtrudersT[i].setValue(inTemp);
-				}
+				if(_page == 2) this->vaExtrudersT[i].setValue(inTemp);
+				if(_page == 3) this->vaPPExtrudersT[i].setValue(inTemp);
 				_et[i] = inTemp;
 			}
 		}
@@ -111,7 +105,7 @@
 	{
 		for(unsigned i = 0; i < EXTRUDERS; i++)
 		{
-			uint16_t average = (uint8_t)((_ea[i] + (uint8_t)printercontrol::getDegHotend(i)) / 2);
+			uint32_t average = (uint32_t)((_ea[i] + (uint32_t)printercontrol::getDegHotend(i)) / 2);
 			if (_ea[i] != average || _pageChanged || !isStarted())
 			{
 				if(_page == printing_page)
@@ -142,7 +136,7 @@
 	{
 		for(unsigned i = 0; i < FAN_COUNT; i++)
 		{
-			int16_t inSpeed = map(printercontrol::getFanSpeed(i), 0, 255, 0, 100);
+			uint32_t inSpeed = (uint32_t)map(printercontrol::getFanSpeed(i), 0, 255, 0, 100);
 			if (inSpeed != _fan || _pageChanged || !isStarted())
 			{
 				this->vaFan.setValue(inSpeed);
@@ -175,20 +169,10 @@
 
 	void nextionlcdelements::setIsPrinting(bool status)
 	{
-		if (_isPrinting != status || _pageChanged || !isStarted())
-		{
+		if(_isPrinting != status){
 			_isPrinting = status;
-
-			if (status == 1)
-			{
-				vaIsPrinting.setValue(1);
-				vaPPIsPrinting.setValue(1);
-			}
-			else
-			{
-				vaIsPrinting.setValue(0);
-				vaPPIsPrinting.setValue(0);
-			}
+			if(_page == 2) vaIsPrinting.setValue(status ? 1 : 0);
+			if(_page == 3) vaPPIsPrinting.setValue(status ? 1 : 0);
 		}
 	}
 
@@ -219,10 +203,7 @@
 
 	void nextionlcdelements::setMessage(const char * inStr)
 	{
-		if(_page == printing_page)
-			this->tMessage.setText(inStr);
-		else
-			this->vaLastMessage.setText(inStr);
+		this->vaLastMessage.setText(inStr);
 	}
 
 	void nextionlcdelements::setTPercentage(uint8_t value)

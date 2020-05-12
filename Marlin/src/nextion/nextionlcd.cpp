@@ -52,7 +52,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  200
+    #define LCD_UPDATE_INTERVAL  500
 
     millis_t next_lcd_update_ms;
 	millis_t sd_update_ms;
@@ -65,7 +65,7 @@
     		SET_INPUT_PULLUP(SD_DETECT_PIN);
   		#endif
 		
-        bool initState = nexInit();
+        bool initState = nexInit((long)250000);
         dispfe.setInitStatus(initState);
 		#if ENABLED(NEXTION_DEBUG)
         	SERIAL_ECHO_START();
@@ -112,10 +112,10 @@
 		    	dispfe.setZPos();
 			}
 
-		    if(!killed) dispfe.setIsPrinting(isPrintingFromMedia());
+		    dispfe.setIsPrinting(isPrintingFromMedia());
 
-		    if(!killed) dispfe.setIsHomed(all_axes_homed());
-			if(!killed) dispfe.setExtruders(EXTRUDERS);
+		    dispfe.setIsHomed(all_axes_homed());
+			dispfe.setExtruders(EXTRUDERS);
 			//dispfe.setIsPaused(card.isPaused());
 
 		    dispfe.resetPageChanged();
@@ -125,7 +125,7 @@
 		        dispfe.setTime();
             #endif
 
-			if(!killed) update_sd(!IS_SD_INSERTED());
+			update_sd(!IS_SD_INSERTED());
 
 			if(sd_readed && dispfe.getPage() == SD_page)
 			{
@@ -152,7 +152,6 @@
   						elapsed.toString(time_buffer);
 						dispfe.setElapsed(time_buffer);
 						remaining.toString(time_buffer);
-						dispfe.setETA(time_buffer);
 					}
 				#endif
 			#endif
@@ -179,9 +178,6 @@
 		if(!sd_readed)
 		{
 			files_count = card.get_num_Files();
-			SERIAL_ECHO_START();
-			SERIAL_ECHOLNPAIR("Stop received: ", files_count);
-			SERIAL_EOL();
 			for(uint16_t i = 0; i<files_count; i++)
 			{
 				card.getfilename_sorted(i);
@@ -191,7 +187,7 @@
 		}
 	}
 
-	void NextionUI::update_sd(bool is_inserted, bool forcibly=false)
+	void NextionUI::update_sd(bool is_inserted, bool forcibly)
 	{
 		#if ENABLED(SDSUPPORT)
 			dispfe.setSDState(card.flag.mounted);
@@ -301,6 +297,10 @@
 			memcpy(subbuff, &receivedString[2], strLength);
 			subbuff[strLength + 1] = '\0';
 
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("Bed temp: ", subbuff);
+			SERIAL_EOL();
+
 			thermalManager.setTargetBed(atoi(subbuff));
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
     			thermalManager.check_timer_autostart(false, true);
@@ -313,8 +313,10 @@
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Stop received: ", subbuff);
 			SERIAL_EOL();
-			abort_print();
-			update_sd(true, true);
+			if(isPrintingFromMedia()){
+				abort_print();
+				update_sd(true, true);
+			}
 		}break;
 		case 'E':
 		{
@@ -324,6 +326,11 @@
 
 			const int8_t target_extruder = ((int)receivedString[1]) - 1;
 			const int16_t temp = atoi(subbuff);
+
+			SERIAL_ECHO_START();
+			SERIAL_ECHOLNPAIR("Extruder temp buff: ", subbuff);
+			SERIAL_ECHOLNPAIR("Extruder temp val: ", temp);
+			SERIAL_EOL();
 
 			thermalManager.setTargetHotend(temp, target_extruder);
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)

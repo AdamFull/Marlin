@@ -218,13 +218,13 @@ bool recvRetCommandFinished(uint32_t timeout)
 }
 
 
-bool nexInit(void)
+bool nexInit(long baud)
 {
     bool ret1 = false;
     bool ret2 = false;
     
     dbSerialBegin(9600);
-    nexSerial.begin(115200);
+    nexSerial.begin(baud);
     sendCommand("");
     sendCommand("bkcmd=1");
     ret1 = recvRetCommandFinished();
