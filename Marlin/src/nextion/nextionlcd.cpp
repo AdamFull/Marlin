@@ -52,7 +52,7 @@
     char buffer[32];
     bool strEnd = false, strStart = true;
 
-    #define LCD_UPDATE_INTERVAL  500
+    #define LCD_UPDATE_INTERVAL  400
 
     millis_t next_lcd_update_ms;
 	millis_t sd_update_ms;
@@ -110,6 +110,13 @@
 				dispfe.setXPos();
 		    	dispfe.setYPos();
 		    	dispfe.setZPos();
+			}
+
+			if(printercontrol::getDegTargetBed() > 0 || printercontrol::getDegTargetHotend(0) > 0){
+				SERIAL_ECHO_START();
+				SERIAL_ECHOLNPAIR("Current extruder temp: ", printercontrol::getDegHotend(0));
+				SERIAL_ECHOLNPAIR("Current bed temp: ", printercontrol::getDegBed());
+				SERIAL_EOL();
 			}
 
 		    dispfe.setIsPrinting(isPrintingFromMedia());
@@ -299,12 +306,15 @@
 
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Bed temp: ", subbuff);
-			SERIAL_EOL();
-
-			thermalManager.setTargetBed(atoi(subbuff));
+			
+			planner.autotemp_enabled = false;
+			thermalManager.setTargetBed(0);
+			thermalManager.setTargetBed((int16_t)atoi(subbuff));
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
     			thermalManager.check_timer_autostart(false, true);
   			#endif
+			SERIAL_ECHOLNPAIR(";New bed target: ", printercontrol::getDegTargetBed());
+			SERIAL_EOL();
 		}break;
 		case 'B':
 		{
@@ -324,18 +334,20 @@
 			memcpy(subbuff, &receivedString[3], strLength);
 			subbuff[strLength + 1] = '\0';
 
-			const int8_t target_extruder = ((int)receivedString[1]) - 1;
-			const int16_t temp = atoi(subbuff);
+			int target_extruder = ((int)receivedString[1]) - 1;
+			int16_t temp = (int16_t)atoi(subbuff);
 
 			SERIAL_ECHO_START();
-			SERIAL_ECHOLNPAIR("Extruder temp buff: ", subbuff);
-			SERIAL_ECHOLNPAIR("Extruder temp val: ", temp);
-			SERIAL_EOL();
-
+			SERIAL_ECHOLNPAIR("Extruder new temp val: ", temp);
+			
+			planner.autotemp_enabled = false;
+			thermalManager.setTargetHotend(0, target_extruder);
 			thermalManager.setTargetHotend(temp, target_extruder);
 			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
-    			thermalManager.check_timer_autostart(false, true);
+    			thermalManager.check_timer_autostart(true, true);
   			#endif
+			SERIAL_ECHOLNPAIR(";New extruder target: ", printercontrol::getDegTargetHotend());
+			SERIAL_EOL();
 			#if ENABLED(AUTOTEMP)
     			planner.autotemp_M104_M109();
   			#endif

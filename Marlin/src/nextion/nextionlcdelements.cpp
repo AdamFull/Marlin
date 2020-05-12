@@ -55,7 +55,7 @@
 
 	void nextionlcdelements::setBedTarget(char *temp)
 	{
-		int32_t inTemp = (int32_t)printercontrol::getDegTargetBed();
+		uint32_t inTemp = (uint32_t)printercontrol::getDegTargetBed();
 		if (inTemp != _bt || _pageChanged || !isStarted())
 		{
 			if(_page == printing_page)

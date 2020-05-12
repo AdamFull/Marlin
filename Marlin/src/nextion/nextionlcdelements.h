@@ -142,7 +142,7 @@
                                               NexButton(SD_page, 4, "b3"), NexButton(SD_page, 5, "b4"), NexButton(SD_page, 6, "b5")};
 
         uint32_t _x, _y, _z;
-	    int32_t _et[EXTRUDERS], _fan, _bt;
+	    uint32_t _et[EXTRUDERS], _fan, _bt;
 	    uint32_t  _ba, _ea[EXTRUDERS];
 	    int  _page = 0;
 	    bool _pageChanged = false;
