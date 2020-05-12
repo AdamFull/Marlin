@@ -348,9 +348,9 @@
   			#endif
 			SERIAL_ECHOLNPAIR(";New extruder target: ", printercontrol::getDegTargetHotend());
 			SERIAL_EOL();
-			#if ENABLED(AUTOTEMP)
+			/*#if ENABLED(AUTOTEMP)
     			planner.autotemp_M104_M109();
-  			#endif
+  			#endif*/
 			//(void)thermalManager.wait_for_hotend(target_extruder, true);
 		}break;
 		#if FAN_COUNT > 0
