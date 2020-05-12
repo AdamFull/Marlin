@@ -306,13 +306,7 @@
 
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Bed temp: ", subbuff);
-			
-			planner.autotemp_enabled = false;
-			thermalManager.setTargetBed(0);
 			thermalManager.setTargetBed((int16_t)atoi(subbuff));
-			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
-    			thermalManager.check_timer_autostart(false, true);
-  			#endif
 			SERIAL_ECHOLNPAIR(";New bed target: ", printercontrol::getDegTargetBed());
 			SERIAL_EOL();
 		}break;
@@ -339,18 +333,9 @@
 
 			SERIAL_ECHO_START();
 			SERIAL_ECHOLNPAIR("Extruder new temp val: ", temp);
-			
-			planner.autotemp_enabled = false;
-			thermalManager.setTargetHotend(0, target_extruder);
 			thermalManager.setTargetHotend(temp, target_extruder);
-			#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
-    			thermalManager.check_timer_autostart(true, true);
-  			#endif
 			SERIAL_ECHOLNPAIR(";New extruder target: ", printercontrol::getDegTargetHotend());
 			SERIAL_EOL();
-			/*#if ENABLED(AUTOTEMP)
-    			planner.autotemp_M104_M109();
-  			#endif*/
 			//(void)thermalManager.wait_for_hotend(target_extruder, true);
 		}break;
 		#if FAN_COUNT > 0
