@@ -185,10 +185,10 @@
 		if(!sd_readed)
 		{
 			files_count = card.get_num_Files();
-			for(uint16_t i = 0; i<files_count; i++)
+			for(uint16_t i = files_count; i>0; i--)
 			{
-				card.getfilename_sorted(i);
-				strcpy(files_list[i], card.filename);
+				card.getfilename_sorted(i-1);
+				strcpy(files_list[i-1], card.filename);
 			}
 			sd_readed = true;
 		}
